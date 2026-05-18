@@ -1,0 +1,1 @@
+La vidéo est ajoutée comme section séparée dans l'accueil. Le hero principal reste comme avant avec l'image.
