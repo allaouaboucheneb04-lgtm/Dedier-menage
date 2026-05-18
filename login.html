@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Connexion interne | Didier.Elo</title>
+  <link rel="icon" href="logo.jpeg">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body class="adminBody">
+  <main class="loginShell">
+    <section class="loginCard">
+      <img src="logo.jpeg" alt="Didier.Elo" class="loginLogo">
+      <span class="adminBadge">Espace interne</span>
+      <h1>Connexion</h1>
+      <p>Accès réservé à l’admin et aux employés.</p>
+
+      <form id="loginForm" class="adminForm">
+        <label>Email
+          <input id="email" type="email" required placeholder="email@exemple.com">
+        </label>
+        <label>Mot de passe
+          <input id="password" type="password" required placeholder="••••••••">
+        </label>
+        <button type="submit" id="loginBtn">Se connecter</button>
+        <p id="status" class="adminStatus"></p>
+      </form>
+
+      <a href="index.html" class="backHome">← Retour au site</a>
+    </section>
+  </main>
+
+  <script type="module" src="login.js"></script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, collection, getDocs,
+  addDoc, updateDoc, serverTimestamp, query, orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { firebaseConfig, ROLES_COLLECTION, QUOTES_COLLECTION, TASKS_COLLECTION } from "./firebase-config.js";
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let employees = [];
+let currentUser = null;
+
+const $ = (id) => document.getElementById(id);
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) return window.location.href = "login.html";
+
+  currentUser = user;
+  $("adminEmail").textContent = user.email || user.uid;
+
+  const roleSnap = await getDoc(doc(db, ROLES_COLLECTION, user.uid));
+  if (!roleSnap.exists() || roleSnap.data().role !== "admin") {
+    alert("Accès admin refusé.");
+    return window.location.href = "login.html";
+  }
+
+  await loadAll();
+});
+
+$("logoutBtn").onclick = async () => {
+  await signOut(auth);
+  window.location.href = "login.html";
+};
+
+$("refreshQuotes").onclick = loadQuotes;
+$("refreshTasks").onclick = loadTasks;
+
+async function loadAll() {
+  await loadEmployees();
+  await loadQuotes();
+  await loadTasks();
+}
+
+async function loadEmployees() {
+  const snap = await getDocs(collection(db, ROLES_COLLECTION));
+  employees = [];
+  snap.forEach((d) => {
+    const data = d.data();
+    if (data.role === "employe") employees.push({ id: d.id, ...data });
+  });
+  $("countEmployees").textContent = employees.length;
+}
+
+$("employeeForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(e.target).entries());
+
+  try {
+    await setDoc(doc(db, ROLES_COLLECTION, data.uid.trim()), {
+      name: data.name.trim(),
+      email: data.email.trim(),
+      role: "employe",
+      active: true,
+      createdAt: serverTimestamp()
+    }, { merge: true });
+
+    $("employeeStatus").textContent = "✅ Employé ajouté / mis à jour.";
+    $("employeeStatus").style.color = "#078b45";
+    e.target.reset();
+    await loadEmployees();
+  } catch (error) {
+    console.error(error);
+    $("employeeStatus").textContent = "❌ Erreur ajout employé.";
+    $("employeeStatus").style.color = "#d21f3c";
+  }
+});
+
+async function loadQuotes() {
+  const list = $("quotesList");
+  list.innerHTML = "<p>Chargement...</p>";
+
+  let snap;
+  try {
+    snap = await getDocs(query(collection(db, QUOTES_COLLECTION), orderBy("createdAt", "desc")));
+  } catch (e) {
+    snap = await getDocs(collection(db, QUOTES_COLLECTION));
+  }
+
+  const docs = [];
+  snap.forEach((d) => docs.push({ id: d.id, ...d.data() }));
+  $("countQuotes").textContent = docs.length;
+
+  if (!docs.length) {
+    list.innerHTML = "<p>Aucune soumission pour le moment.</p>";
+    return;
+  }
+
+  list.innerHTML = docs.map((q) => quoteCard(q)).join("");
+
+  list.querySelectorAll("[data-assign]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const quoteId = btn.dataset.assign;
+      const select = document.querySelector(`[data-employee-select="${quoteId}"]`);
+      const emp = employees.find(e => e.id === select.value);
+
+      if (!emp) return alert("Choisis un employé.");
+
+      const q = docs.find(x => x.id === quoteId);
+      await addDoc(collection(db, TASKS_COLLECTION), {
+        quoteId,
+        clientName: q.name || "",
+        phone: q.phone || "",
+        email: q.email || "",
+        service: q.service || "",
+        address: q.address || "",
+        date: q.date || "",
+        message: q.message || "",
+        employeeId: emp.id,
+        employeeName: emp.name || emp.email || "Employé",
+        employeeEmail: emp.email || "",
+        status: "assigné",
+        notes: "",
+        createdAt: serverTimestamp(),
+        assignedBy: currentUser.uid
+      });
+
+      await updateDoc(doc(db, QUOTES_COLLECTION, quoteId), {
+        status: "assigné",
+        assignedTo: emp.id,
+        assignedToName: emp.name || emp.email || "Employé"
+      });
+
+      alert("Travail assigné ✅");
+      await loadAll();
+    });
+  });
+}
+
+function quoteCard(q) {
+  const options = employees.map(e => `<option value="${e.id}">${escapeHtml(e.name || e.email)}</option>`).join("");
+  return `
+    <article class="adminCard">
+      <div class="cardTop">
+        <h3>${escapeHtml(q.name || "Sans nom")}</h3>
+        <span class="status">${escapeHtml(q.status || "nouveau")}</span>
+      </div>
+      <p><b>Service:</b> ${escapeHtml(q.service || "-")}</p>
+      <p><b>Téléphone:</b> <a href="tel:${escapeHtml(q.phone || "")}">${escapeHtml(q.phone || "-")}</a></p>
+      <p><b>Email:</b> ${escapeHtml(q.email || "-")}</p>
+      <p><b>Adresse:</b> ${escapeHtml(q.address || "-")}</p>
+      <p><b>Date:</b> ${escapeHtml(q.date || "-")}</p>
+      <p><b>Message:</b> ${escapeHtml(q.message || "-")}</p>
+      <div class="assignRow">
+        <select data-employee-select="${q.id}">
+          <option value="">Choisir employé</option>
+          ${options}
+        </select>
+        <button data-assign="${q.id}" class="smallBtn">Assigner</button>
+      </div>
+    </article>
+  `;
+}
+
+async function loadTasks() {
+  const list = $("tasksList");
+  list.innerHTML = "<p>Chargement...</p>";
+
+  let snap;
+  try {
+    snap = await getDocs(query(collection(db, TASKS_COLLECTION), orderBy("createdAt", "desc")));
+  } catch (e) {
+    snap = await getDocs(collection(db, TASKS_COLLECTION));
+  }
+
+  const docs = [];
+  snap.forEach((d) => docs.push({ id: d.id, ...d.data() }));
+  $("countTasks").textContent = docs.length;
+
+  if (!docs.length) {
+    list.innerHTML = "<p>Aucun travail assigné.</p>";
+    return;
+  }
+
+  list.innerHTML = docs.map(taskCard).join("");
+
+  list.querySelectorAll("[data-status]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      await updateDoc(doc(db, TASKS_COLLECTION, btn.dataset.task), {
+        status: btn.dataset.status,
+        updatedAt: serverTimestamp()
+      });
+      await loadTasks();
+    });
+  });
+}
+
+function taskCard(t) {
+  return `
+    <article class="adminCard">
+      <div class="cardTop">
+        <h3>${escapeHtml(t.clientName || "Client")}</h3>
+        <span class="status">${escapeHtml(t.status || "-")}</span>
+      </div>
+      <p><b>Employé:</b> ${escapeHtml(t.employeeName || "-")}</p>
+      <p><b>Service:</b> ${escapeHtml(t.service || "-")}</p>
+      <p><b>Adresse:</b> ${escapeHtml(t.address || "-")}</p>
+      <p><b>Téléphone:</b> ${escapeHtml(t.phone || "-")}</p>
+      <div class="assignRow">
+        <button class="smallBtn" data-task="${t.id}" data-status="assigné">Assigné</button>
+        <button class="smallBtn" data-task="${t.id}" data-status="en cours">En cours</button>
+        <button class="smallBtn ok" data-task="${t.id}" data-status="terminé">Terminé</button>
+      </div>
+    </article>
+  `;
+}
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (m) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+  }[m]));
+}
