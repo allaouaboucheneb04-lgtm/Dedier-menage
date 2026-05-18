@@ -23,4 +23,96 @@
 <h2>Didier.Elo Multi Service Inc</h2>
 <p>📞 514 473 5315 / 438 836 7993</p>
 </footer>
-<script>function openMenu(){document.getElementById('sideMenu').classList.add('active')}function closeMenu(){document.getElementById('sideMenu').classList.remove('active')}</script></body></html>
+<script>function openMenu(){document.getElementById('sideMenu').classList.add('active')}function closeMenu(){document.getElementById('sideMenu').classList.remove('active')}</script>
+<section class='section'>
+<div class='title'>
+<h2>Soumission gratuite</h2>
+</div>
+
+<div class='card' style='max-width:1000px;margin:auto'>
+<form id="quoteForm" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+<input name="name" required placeholder="Nom complet" style="padding:18px;border-radius:16px;border:1px solid #d8e6f4">
+<input name="phone" required placeholder="Téléphone" style="padding:18px;border-radius:16px;border:1px solid #d8e6f4">
+<input name="email" type="email" placeholder="Email" style="padding:18px;border-radius:16px;border:1px solid #d8e6f4">
+<select name="service" required style="padding:18px;border-radius:16px;border:1px solid #d8e6f4">
+<option value="">Choisir un service</option>
+<option>Bureaux</option>
+<option>Commerces</option>
+<option>Résidentiel</option>
+<option>Airbnb</option>
+<option>Après construction</option>
+<option>Grand ménage</option>
+</select>
+<input name="address" placeholder="Adresse" style="padding:18px;border-radius:16px;border:1px solid #d8e6f4">
+<input name="date" type="date" style="padding:18px;border-radius:16px;border:1px solid #d8e6f4">
+<textarea name="message" placeholder="Message" style="grid-column:1/-1;height:140px;padding:18px;border-radius:16px;border:1px solid #d8e6f4"></textarea>
+<button id="submitBtn" type="submit" style="grid-column:1/-1;padding:20px;background:#00a8ff;color:white;border:none;border-radius:18px;font-weight:700">Envoyer la demande</button>
+<p id="formStatus" style="grid-column:1/-1;text-align:center;font-weight:700"></p>
+</form>
+</div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey:"AIzaSyCz1BC9YSHQsBB1kBRWy8TdLqs2D7ytOiA",
+authDomain:"dedie-menage.firebaseapp.com",
+projectId:"dedie-menage",
+storageBucket:"dedie-menage.firebasestorage.app",
+messagingSenderId:"745599536988",
+appId:"1:745599536988:web:c217af2d377cf70ffffb99"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+emailjs.init({ publicKey:"n4Ln13zFITFZtnmdL" });
+
+const form = document.getElementById("quoteForm");
+const statusEl = document.getElementById("formStatus");
+const submitBtn = document.getElementById("submitBtn");
+
+form.addEventListener("submit", async(e)=>{
+e.preventDefault();
+
+const data = Object.fromEntries(new FormData(form).entries());
+
+submitBtn.disabled = true;
+submitBtn.textContent = "Envoi en cours...";
+
+try{
+
+await addDoc(collection(db,"demandes_soumission"),{
+...data,
+createdAt: serverTimestamp()
+});
+
+await emailjs.send(
+"service_yxizoav",
+"template_7xcmars",
+data
+);
+
+statusEl.innerHTML = "✅ Demande envoyée avec succès";
+statusEl.style.color = "#00a86b";
+
+form.reset();
+
+}catch(error){
+
+console.error(error);
+
+statusEl.innerHTML = "❌ Erreur d'envoi";
+statusEl.style.color = "red";
+
+}
+
+submitBtn.disabled = false;
+submitBtn.textContent = "Envoyer la demande";
+
+});
+</script>
+</body></html>
