@@ -30,13 +30,41 @@ service cloud.firestore {
 
     match /users/{uid} {
       allow read: if isAdmin() || (signedIn() && request.auth.uid == uid);
-      allow create, update: if isAdmin();
-      allow delete: if isAdmin();
+
+      allow create: if isAdmin()
+        || (
+          signedIn()
+          && request.auth.uid == uid
+          && request.resource.data.role == "employe"
+          && request.resource.data.email == request.auth.token.email
+          && exists(/databases/$(database)/documents/invites/$(request.resource.data.inviteCode))
+          && get(/databases/$(database)/documents/invites/$(request.resource.data.inviteCode)).data.email == request.auth.token.email
+          && get(/databases/$(database)/documents/invites/$(request.resource.data.inviteCode)).data.status == "pending"
+        );
+
+      allow update, delete: if isAdmin();
+    }
+
+    match /invites/{code} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+
+      allow update: if isAdmin()
+        || (
+          signedIn()
+          && resource.data.email == request.auth.token.email
+          && resource.data.status == "pending"
+          && request.resource.data.status == "accepted"
+          && request.resource.data.uid == request.auth.uid
+        );
     }
 
     match /taches/{id} {
-      allow read: if isAdmin() || (isEmploye() && resource.data.employeeId == request.auth.uid);
+      allow read: if isAdmin()
+        || (isEmploye() && resource.data.employeeId == request.auth.uid);
+
       allow create, update, delete: if isAdmin();
+
       allow update: if isEmploye()
         && resource.data.employeeId == request.auth.uid
         && request.resource.data.employeeId == resource.data.employeeId;

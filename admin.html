@@ -33,23 +33,48 @@
       <div><strong id="countEmployees">0</strong><span>Employés</span></div>
     </section>
 
+    
     <section class="panel">
       <div class="panelHead">
         <div>
           <span class="adminBadge">Employés</span>
-          <h2>Créer un accès employé</h2>
+          <h2>Inviter un employé par email</h2>
         </div>
       </div>
 
-      <form id="employeeForm" class="adminForm grid3">
-        <label>Nom employé<input name="name" required placeholder="Nom complet"></label>
-        <label>Email<input name="email" type="email" required placeholder="email@exemple.com"></label>
-        <label>UID Firebase<input name="uid" required placeholder="UID du compte Auth"></label>
-        <button type="submit">Ajouter / mettre à jour</button>
-        <p id="employeeStatus" class="adminStatus full"></p>
+      <form id="inviteForm" class="adminForm grid3">
+        <label>Nom employé
+          <input name="name" required placeholder="Nom complet">
+        </label>
+
+        <label>Email employé
+          <input name="email" type="email" required placeholder="email@exemple.com">
+        </label>
+
+        <label>Rôle
+          <select name="role" required>
+            <option value="employe">Employé</option>
+          </select>
+        </label>
+
+        <button type="submit">Créer invitation</button>
+        <p id="inviteStatus" class="adminStatus full"></p>
       </form>
-      <p class="hint">Créer d’abord l’utilisateur dans Firebase Auth, puis copier son UID ici.</p>
+
+      <div id="inviteResult" class="inviteResult" hidden>
+        <b>Lien d’invitation :</b>
+        <input id="inviteLink" readonly>
+        <div class="assignRow">
+          <button id="copyInvite" class="smallBtn">Copier le lien</button>
+          <a id="emailInvite" class="smallBtn ok" href="#">Envoyer par email</a>
+        </div>
+      </div>
+
+      <p class="hint">
+        L’employé reçoit le lien, crée son mot de passe et son compte sera automatiquement ajouté dans Firestore.
+      </p>
     </section>
+
 
     <section class="panel">
       <div class="panelHead">

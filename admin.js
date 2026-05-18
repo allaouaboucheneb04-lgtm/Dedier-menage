@@ -5,6 +5,7 @@ import {
   addDoc, updateDoc, serverTimestamp, query, orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import { firebaseConfig, ROLES_COLLECTION, QUOTES_COLLECTION, TASKS_COLLECTION } from "./firebase-config.js";
+const INVITES_COLLECTION = "invites";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -54,28 +55,57 @@ async function loadEmployees() {
   $("countEmployees").textContent = employees.length;
 }
 
-$("employeeForm").addEventListener("submit", async (e) => {
+$("inviteForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const data = Object.fromEntries(new FormData(e.target).entries());
+  const code = crypto.randomUUID().slice(0, 8).toUpperCase();
+  const cleanEmail = data.email.trim().toLowerCase();
+  const link = `${location.origin}${location.pathname.replace("admin.html", "")}invite.html?code=${code}`;
 
   try {
-    await setDoc(doc(db, ROLES_COLLECTION, data.uid.trim()), {
+    await setDoc(doc(db, INVITES_COLLECTION, code), {
+      code,
       name: data.name.trim(),
-      email: data.email.trim(),
+      email: cleanEmail,
       role: "employe",
-      active: true,
-      createdAt: serverTimestamp()
-    }, { merge: true });
+      status: "pending",
+      createdAt: serverTimestamp(),
+      createdBy: currentUser.uid,
+      inviteLink: link
+    });
 
-    $("employeeStatus").textContent = "✅ Employé ajouté / mis à jour.";
-    $("employeeStatus").style.color = "#078b45";
+    $("inviteStatus").textContent = "✅ Invitation créée.";
+    $("inviteStatus").style.color = "#078b45";
+
+    $("inviteResult").hidden = false;
+    $("inviteLink").value = link;
+
+    const subject = encodeURIComponent("Invitation Didier.Elo Multi Service Inc");
+    const body = encodeURIComponent(
+`Bonjour ${data.name},
+
+Vous avez été invité à rejoindre l’espace employé Didier.Elo Multi Service Inc.
+
+Cliquez ici pour créer votre accès :
+${link}
+
+Merci.`
+    );
+
+    $("emailInvite").href = `mailto:${cleanEmail}?subject=${subject}&body=${body}`;
+
     e.target.reset();
-    await loadEmployees();
   } catch (error) {
     console.error(error);
-    $("employeeStatus").textContent = "❌ Erreur ajout employé.";
-    $("employeeStatus").style.color = "#d21f3c";
+    $("inviteStatus").textContent = "❌ Erreur création invitation.";
+    $("inviteStatus").style.color = "#d21f3c";
   }
+});
+
+$("copyInvite").addEventListener("click", async () => {
+  await navigator.clipboard.writeText($("inviteLink").value);
+  $("inviteStatus").textContent = "✅ Lien copié.";
+  $("inviteStatus").style.color = "#078b45";
 });
 
 async function loadQuotes() {
