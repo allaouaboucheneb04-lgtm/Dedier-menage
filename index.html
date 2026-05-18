@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Didier.Elo Multi Service Inc | Nettoyage & Entretien</title>
+  <meta name="description" content="Service de nettoyage et d’entretien à Laval, Montréal et environs. Bureaux, commerces, immeubles résidentiels, Airbnb, après construction, grand ménage et entretien régulier." />
+  <meta name="theme-color" content="#0b6cff" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#accueil">
+      <span class="logo">D.E</span>
+      <span>
+        <strong>Didier.Elo</strong>
+        <small>Multi Service Inc</small>
+      </span>
+    </a>
+    <nav>
+      <a href="#services">Services</a>
+      <a href="#soumission">Soumission</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="accueil" class="hero">
+      <div class="hero-text">
+        <span class="badge">Nettoyage • Entretien • Qualité</span>
+        <h1>Service de nettoyage professionnel pour maisons, bureaux et commerces.</h1>
+        <p>Équipe fiable, travail soigné et soumission rapide à Laval, Montréal et environs.</p>
+        <div class="actions">
+          <a class="btn primary" href="#soumission">Demander une soumission</a>
+          <a class="btn secondary" href="tel:5144735315">Appeler maintenant</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="shine"></div>
+        <h2>Nos engagements</h2>
+        <ul>
+          <li>✅ Travail propre et professionnel</li>
+          <li>✅ Service résidentiel et commercial</li>
+          <li>✅ Grand ménage et entretien régulier</li>
+          <li>✅ Réponse rapide par téléphone ou email</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="services" class="section">
+      <div class="section-title">
+        <span>Nos services</span>
+        <h2>Des solutions adaptées à vos besoins</h2>
+      </div>
+      <div class="grid">
+        <article class="card">🏢 <h3>Bureaux</h3><p>Entretien régulier pour espaces professionnels.</p></article>
+        <article class="card">🏬 <h3>Commerces</h3><p>Nettoyage propre pour accueillir vos clients.</p></article>
+        <article class="card">🏘️ <h3>Immeubles résidentiels</h3><p>Entrées, couloirs et espaces communs.</p></article>
+        <article class="card">🔑 <h3>Airbnb</h3><p>Préparation rapide entre deux réservations.</p></article>
+        <article class="card">🚧 <h3>Après construction</h3><p>Nettoyage après travaux et rénovation.</p></article>
+        <article class="card">✨ <h3>Grand ménage</h3><p>Nettoyage complet et entretien régulier.</p></article>
+      </div>
+    </section>
+
+    <section class="section split">
+      <div>
+        <span class="badge">Pourquoi nous choisir</span>
+        <h2>Un service simple, rapide et professionnel.</h2>
+        <p>Vous envoyez votre demande, nous recevons automatiquement les détails par email et dans Firebase pour un suivi propre.</p>
+      </div>
+      <div class="features">
+        <div>📍 Laval • Montréal • Environs</div>
+        <div>📱 Contact rapide mobile</div>
+        <div>🧾 Soumission claire</div>
+        <div>🛡️ Service sérieux</div>
+      </div>
+    </section>
+
+    <section id="soumission" class="section form-section">
+      <div class="section-title">
+        <span>Soumission gratuite</span>
+        <h2>Envoyez votre demande</h2>
+      </div>
+
+      <form id="quoteForm" class="quote-form">
+        <div class="row">
+          <label>Nom complet<input name="name" required placeholder="Votre nom" /></label>
+          <label>Téléphone<input name="phone" required placeholder="514 000 0000" /></label>
+        </div>
+        <div class="row">
+          <label>Email<input name="email" type="email" placeholder="exemple@email.com" /></label>
+          <label>Service
+            <select name="service" required>
+              <option value="">Choisir un service</option>
+              <option>Bureaux</option>
+              <option>Commerces</option>
+              <option>Immeubles résidentiels</option>
+              <option>Airbnb</option>
+              <option>Nettoyage après construction</option>
+              <option>Grand ménage et entretien régulier</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label>Adresse<input name="address" required placeholder="Adresse du service" /></label>
+          <label>Date souhaitée<input name="date" type="date" /></label>
+        </div>
+        <label>Message<textarea name="message" rows="5" placeholder="Décrivez le travail à faire..."></textarea></label>
+        <button id="submitBtn" class="btn primary full" type="submit">Envoyer la demande</button>
+        <p id="formStatus" class="status"></p>
+      </form>
+    </section>
+
+    <section id="contact" class="section contact">
+      <div>
+        <h2>Contact</h2>
+        <p><strong>Téléphone :</strong> <a href="tel:5144735315">514 473 5315</a> / <a href="tel:4388367993">438 836 7993</a></p>
+        <p><strong>Email :</strong> <a href="mailto:didierelo69@gmail.com">didierelo69@gmail.com</a></p>
+        <p><strong>Adresse :</strong> 1344 chemin du Bord-de-l’Eau, Laval, QC H7Y 1C1</p>
+      </div>
+      <div class="qr-box">
+        <span>QR CODE</span>
+        <small>Ajoute ici ton QR code plus tard</small>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Didier.Elo Multi Service Inc — Nettoyage & Entretien
+  </footer>
+
+  <div class="mobile-cta">
+    <a href="tel:5144735315">📞 Appeler</a>
+    <a href="#soumission">🧾 Soumission</a>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
