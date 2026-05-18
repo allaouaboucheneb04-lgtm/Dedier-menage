@@ -69,3 +69,159 @@
   .videoShowcase{padding:58px 5%}
   .videoFrame{border-radius:24px;border-width:5px}
 }
+
+
+.contactPro{
+  padding:90px 5%;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(0,168,255,.12), transparent 32%),
+    linear-gradient(180deg,#ffffff,#eef8ff);
+}
+
+.contactCard{
+  max-width:1150px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:280px 1fr;
+  gap:34px;
+  align-items:center;
+  background:white;
+  border-radius:42px;
+  padding:34px;
+  box-shadow:0 30px 90px rgba(6,50,100,.14);
+  border:1px solid #e4f1ff;
+}
+
+.contactLogo{
+  min-height:310px;
+  border-radius:34px;
+  background:linear-gradient(135deg,#e8f8ff,#ffffff);
+  display:grid;
+  place-items:center;
+  border:1px solid #d8ecff;
+}
+
+.contactLogo img{
+  width:210px;
+  height:210px;
+  object-fit:cover;
+  border-radius:50%;
+  box-shadow:0 20px 50px rgba(0,120,220,.16);
+}
+
+.contactContent span{
+  display:inline-block;
+  background:#dff5ff;
+  color:#006bd6;
+  border-radius:999px;
+  padding:10px 16px;
+  font-weight:950;
+}
+
+.contactContent h2{
+  font-size:clamp(2.2rem,5vw,4rem);
+  line-height:1;
+  margin:16px 0 12px;
+  color:#071f3d;
+}
+
+.contactSub{
+  color:#60758d;
+  font-size:1.1rem;
+  line-height:1.6;
+  margin-bottom:22px;
+}
+
+.contactGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin:26px 0;
+}
+
+.contactItem{
+  background:#f6fbff;
+  border:1px solid #d9ecff;
+  border-radius:24px;
+  padding:20px;
+  min-height:150px;
+}
+
+.contactItem b{
+  display:block;
+  color:#60758d;
+  margin-bottom:14px;
+}
+
+.contactItem strong{
+  display:block;
+  color:#071f3d;
+  font-size:1.08rem;
+  line-height:1.35;
+  word-break:break-word;
+}
+
+.contactItem small{
+  display:block;
+  margin-top:8px;
+  color:#0074e8;
+  font-weight:900;
+}
+
+.contactActions{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.contactBtn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px 20px;
+  border-radius:18px;
+  font-weight:950;
+}
+
+.contactBtn.main{
+  background:linear-gradient(135deg,#00a8ff,#0066ff);
+  color:white;
+  box-shadow:0 16px 32px rgba(0,120,255,.24);
+}
+
+.contactBtn.light{
+  background:#eef8ff;
+  color:#006bd6;
+}
+
+.footerPro{
+  text-align:center;
+  padding:30px 5% 90px;
+  color:#60758d;
+  background:#eef8ff;
+  font-weight:700;
+}
+
+@media(max-width:850px){
+  .contactPro{padding:58px 5%}
+  .contactCard{
+    grid-template-columns:1fr;
+    padding:22px;
+    border-radius:30px;
+  }
+  .contactLogo{
+    min-height:220px;
+    border-radius:26px;
+  }
+  .contactLogo img{
+    width:160px;
+    height:160px;
+  }
+  .contactGrid{
+    grid-template-columns:1fr;
+  }
+  .contactActions{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+}
