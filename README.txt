@@ -1,1 +1,1 @@
-Version corrigée: formulaire mobile 1 colonne, design plus propre, menu hamburger, pages services et employés.
+Version avec photos différentes pour chaque service + slider accueil automatique chaque 3 secondes.
