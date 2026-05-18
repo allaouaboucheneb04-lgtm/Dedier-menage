@@ -19,7 +19,7 @@ const EMAILJS_PUBLIC_KEY = "n4Ln13zFITFZtnmdL";
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-try { getAnalytics(app); } catch (e) { console.log("Analytics non activé:", e); }
+try { getAnalytics(app); } catch (error) {}
 
 emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
@@ -29,14 +29,14 @@ const form = document.getElementById("quoteForm");
 const statusEl = document.getElementById("formStatus");
 const submitBtn = document.getElementById("submitBtn");
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const data = Object.fromEntries(new FormData(form).entries());
 
   submitBtn.disabled = true;
   submitBtn.textContent = "Envoi en cours...";
   statusEl.textContent = "";
-
-  const data = Object.fromEntries(new FormData(form).entries());
 
   try {
     await addDoc(collection(db, "demandes_soumission"), {
@@ -46,20 +46,20 @@ form.addEventListener("submit", async (e) => {
     });
 
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      name: data.name,
-      phone: data.phone,
-      email: data.email,
-      service: data.service,
-      address: data.address,
-      date: data.date,
-      message: data.message
+      name: data.name || "",
+      phone: data.phone || "",
+      email: data.email || "",
+      service: data.service || "",
+      address: data.address || "",
+      date: data.date || "",
+      message: data.message || ""
     });
 
     statusEl.textContent = "✅ Demande envoyée avec succès. Nous allons vous contacter rapidement.";
-    statusEl.style.color = "#0a8f3c";
+    statusEl.style.color = "#0a8f45";
     form.reset();
   } catch (error) {
-    console.error(error);
+    console.error("Erreur formulaire:", error);
     statusEl.textContent = "❌ Erreur d’envoi. Vérifiez Firebase, EmailJS ou vos règles Firestore.";
     statusEl.style.color = "#d21f3c";
   } finally {

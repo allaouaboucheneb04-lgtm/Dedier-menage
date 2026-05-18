@@ -1,29 +1,21 @@
-SITE DIDIER.ELO MULTI SERVICE INC
+SITE MODERNE DIDIER.ELO MULTI SERVICE INC
 
-Fichiers:
+Fichiers inclus:
 - index.html
 - style.css
 - app.js
 - manifest.json
-- icon.svg
-
-Déploiement GitHub:
-1. Crée un nouveau repository.
-2. Upload tous les fichiers.
-3. Va dans Settings > Pages.
-4. Source: Deploy from branch.
-5. Branche: main / root.
-6. Attends le lien GitHub Pages.
+- logo.jpeg
 
 Firebase:
-Le formulaire enregistre les demandes dans:
+Collection utilisée:
 demandes_soumission
 
-Règles Firestore simples pour test:
+Règles Firestore:
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /demandes_soumission/{id} {
+    match /demandes_soumission/{document} {
       allow create: if true;
       allow read, update, delete: if false;
     }
@@ -33,4 +25,10 @@ service cloud.firestore {
 EmailJS:
 Service ID: service_yxizoav
 Template ID: template_7xcmars
-Public Key déjà intégré.
+Public Key: intégré dans app.js
+
+Déploiement GitHub:
+1. Remplace les anciens fichiers par ceux-ci.
+2. Upload tout dans GitHub.
+3. Attends 2-5 minutes.
+4. Recharge le site.
