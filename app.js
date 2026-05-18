@@ -1,6 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-analytics.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCz1BC9YSHQsBB1kBRWy8TdLqs2D7ytOiA",
@@ -8,51 +7,54 @@ const firebaseConfig = {
   projectId: "dedie-menage",
   storageBucket: "dedie-menage.firebasestorage.app",
   messagingSenderId: "745599536988",
-  appId: "1:745599536988:web:c217af2d377cf70ffffb99",
-  measurementId: "G-217K38KGHD"
+  appId: "1:745599536988:web:c217af2d377cf70ffffb99"
 };
-
-const EMAILJS_SERVICE_ID = "service_yxizoav";
-const EMAILJS_TEMPLATE_ID = "template_7xcmars";
-const EMAILJS_PUBLIC_KEY = "n4Ln13zFITFZtnmdL";
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-try { getAnalytics(app); } catch (e) {}
 
-emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-document.getElementById("year").textContent = new Date().getFullYear();
+emailjs.init({ publicKey: "n4Ln13zFITFZtnmdL" });
 
 const form = document.getElementById("quoteForm");
 const statusEl = document.getElementById("formStatus");
 const submitBtn = document.getElementById("submitBtn");
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const data = Object.fromEntries(new FormData(form).entries());
+form.addEventListener("submit", async(e)=>{
+e.preventDefault();
 
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Envoi en cours...";
-  statusEl.textContent = "";
+const data = Object.fromEntries(new FormData(form).entries());
 
-  try {
-    await addDoc(collection(db, "demandes_soumission"), {
-      ...data,
-      source: "site_web",
-      createdAt: serverTimestamp()
-    });
+submitBtn.disabled = true;
+submitBtn.textContent = "Envoi en cours...";
 
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, data);
+try{
 
-    statusEl.textContent = "✅ Demande envoyée avec succès.";
-    statusEl.style.color = "#7CFFB2";
-    form.reset();
-  } catch (error) {
-    console.error(error);
-    statusEl.textContent = "❌ Erreur. Vérifiez Firebase / EmailJS / Rules.";
-    statusEl.style.color = "#ff7c7c";
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Envoyer la demande";
-  }
+await addDoc(collection(db,"demandes_soumission"),{
+...data,
+createdAt: serverTimestamp()
+});
+
+await emailjs.send(
+"service_yxizoav",
+"template_7xcmars",
+data
+);
+
+statusEl.innerHTML = "✅ Demande envoyée avec succès";
+statusEl.style.color = "#00a86b";
+
+form.reset();
+
+}catch(error){
+
+console.error(error);
+
+statusEl.innerHTML = "❌ Erreur d'envoi";
+statusEl.style.color = "red";
+
+}
+
+submitBtn.disabled = false;
+submitBtn.textContent = "Envoyer la demande";
+
 });
