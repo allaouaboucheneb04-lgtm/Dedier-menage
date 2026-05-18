@@ -1,14 +1,13 @@
-SITE MODERNE DIDIER.ELO MULTI SERVICE INC
+Version WOW / tape-à-l'œil pour Didier.Elo Multi Service Inc.
 
-Fichiers inclus:
-- index.html
-- style.css
-- app.js
-- manifest.json
-- logo.jpeg
+Remplace les anciens fichiers GitHub par ceux-ci:
+index.html
+style.css
+app.js
+manifest.json
+logo.jpeg
 
-Firebase:
-Collection utilisée:
+Firebase collection:
 demandes_soumission
 
 Règles Firestore:
@@ -21,14 +20,3 @@ service cloud.firestore {
     }
   }
 }
-
-EmailJS:
-Service ID: service_yxizoav
-Template ID: template_7xcmars
-Public Key: intégré dans app.js
-
-Déploiement GitHub:
-1. Remplace les anciens fichiers par ceux-ci.
-2. Upload tout dans GitHub.
-3. Attends 2-5 minutes.
-4. Recharge le site.
