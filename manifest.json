@@ -1,15 +1,1 @@
-{
-"name":"Didier.Elo Multi Service Inc",
-"short_name":"Didier.Elo",
-"start_url":"./",
-"display":"standalone",
-"background_color":"#ffffff",
-"theme_color":"#00a8ff",
-"icons":[
-{
-"src":"logo.jpeg",
-"sizes":"512x512",
-"type":"image/jpeg"
-}
-]
-}
+{"name":"Didier.Elo"}
