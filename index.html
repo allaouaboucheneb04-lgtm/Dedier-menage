@@ -1,118 +1,128 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Accueil</title><link rel='stylesheet' href='style.css'></head><body>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Didier.Elo Multi Service Inc | Nettoyage professionnel</title>
+  <meta name="description" content="Nettoyage professionnel à Laval et Montréal : bureaux, commerces, immeubles résidentiels, Airbnb, après construction et grand ménage." />
+  <link rel="icon" href="logo.jpeg" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
 <header class="header">
-<div class="logoBox">
-<img src="logo.jpeg">
-<div><h1>Didier.Elo</h1><p>Multi Service Inc</p></div>
-</div>
-<div class="hamburger" onclick="openMenu()">☰</div>
+  <a href="index.html" class="brand">
+    <img src="logo.jpeg" alt="Didier.Elo">
+    <div><strong>Didier.Elo</strong><span>Multi Service Inc</span></div>
+  </a>
+  <button class="hamburger" id="openMenu">☰</button>
 </header>
-<div class="sideMenu" id="sideMenu">
-<a onclick="closeMenu()">✕</a>
-<a href="index.html">Accueil</a>
-<a href="bureaux.html">Bureaux</a>
-<a href="commerces.html">Commerces</a>
-<a href="residentiel.html">Résidentiel</a>
-<a href="airbnb.html">Airbnb</a>
-<a href="construction.html">Après construction</a>
-<a href="grand-menage.html">Grand ménage</a>
-<a href="employes.html">Employés</a>
+
+<nav class="drawer" id="drawer">
+  <button class="close" id="closeMenu">×</button>
+  <a href="#accueil">Accueil</a>
+  <a href="#services">Services</a>
+  <a href="bureaux.html">Bureaux</a>
+  <a href="commerces.html">Commerces</a>
+  <a href="residentiel.html">Résidentiel</a>
+  <a href="airbnb.html">Airbnb</a>
+  <a href="construction.html">Après construction</a>
+  <a href="grand-menage.html">Grand ménage</a>
+  <a href="employes.html">Employés</a>
+  <a href="#soumission">Soumission</a>
+</nav>
+
+<main>
+  <section id="accueil" class="hero">
+    <div class="heroShade"></div>
+    <div class="heroContent">
+      <span class="eyebrow">Nettoyage premium • Laval & Montréal</span>
+      <h1>Votre espace propre, frais et impeccable.</h1>
+      <p>Un service professionnel pour bureaux, commerces, immeubles résidentiels, Airbnb, après construction et grand ménage.</p>
+      <div class="heroButtons">
+        <a href="#soumission" class="btn primary">Demander une soumission</a>
+        <a href="tel:5144735315" class="btn secondary">Appeler maintenant</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="services" class="section">
+    <div class="sectionHead">
+      <span>Nos services</span>
+      <h2>Un service adapté à chaque besoin</h2>
+    </div>
+    <div class="serviceGrid">
+      <a class="serviceCard" href="bureaux.html"><img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80"><h3>Bureaux</h3></a>
+      <a class="serviceCard" href="commerces.html"><img src="https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=900&q=80"><h3>Commerces</h3></a>
+      <a class="serviceCard" href="residentiel.html"><img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80"><h3>Immeubles résidentiels</h3></a>
+      <a class="serviceCard" href="airbnb.html"><img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=900&q=80"><h3>Airbnb</h3></a>
+      <a class="serviceCard" href="construction.html"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=900&q=80"><h3>Après construction</h3></a>
+      <a class="serviceCard" href="grand-menage.html"><img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=80"><h3>Grand ménage</h3></a>
+    </div>
+  </section>
+
+  <section class="why">
+    <div>
+      <span class="eyebrow dark">Pourquoi nous choisir</span>
+      <h2>Une image propre, sérieuse et professionnelle.</h2>
+      <p>Un site clair, moderne et rassurant. Le formulaire est facile à remplir sur téléphone et il envoie la demande par EmailJS + Firebase.</p>
+    </div>
+    <div class="whyList">
+      <div>✅ Qualité garantie</div>
+      <div>⏱️ Réponse rapide</div>
+      <div>🧼 Résultat impeccable</div>
+      <div>🤝 Équipe fiable</div>
+    </div>
+  </section>
+
+  <section id="soumission" class="quoteSection">
+    <div class="quoteHeader">
+      <span>Soumission gratuite</span>
+      <h2>Demandez votre estimation</h2>
+      <p>Remplissez le formulaire, nous vous contacterons rapidement.</p>
+    </div>
+
+    <form id="quoteForm" class="quoteForm">
+      <label>Nom complet<input name="name" required placeholder="Votre nom"></label>
+      <label>Téléphone<input name="phone" required placeholder="514 000 0000"></label>
+      <label>Email<input name="email" type="email" placeholder="votre@email.com"></label>
+      <label>Service
+        <select name="service" required>
+          <option value="">Choisir un service</option>
+          <option>Bureaux</option>
+          <option>Commerces</option>
+          <option>Immeubles résidentiels</option>
+          <option>Airbnb</option>
+          <option>Nettoyage après construction</option>
+          <option>Grand ménage et entretien régulier</option>
+        </select>
+      </label>
+      <label>Adresse<input name="address" required placeholder="Adresse du service"></label>
+      <label>Date souhaitée<input name="date" type="date"></label>
+      <label class="full">Message<textarea name="message" rows="5" placeholder="Décrivez le travail à faire..."></textarea></label>
+      <button id="submitBtn" class="full" type="submit">Envoyer la demande</button>
+      <p id="formStatus" class="full"></p>
+    </form>
+  </section>
+
+  <section class="contact">
+    <img src="logo.jpeg" alt="Logo">
+    <div>
+      <h2>Didier.Elo Multi Service Inc</h2>
+      <p><strong>Téléphone :</strong> <a href="tel:5144735315">514 473 5315</a> / <a href="tel:4388367993">438 836 7993</a></p>
+      <p><strong>Email :</strong> <a href="mailto:didierelo69@gmail.com">didierelo69@gmail.com</a></p>
+      <p><strong>Adresse :</strong> 1344 chemin du Bord-de-l’Eau, Laval, QC H7Y 1C1</p>
+    </div>
+  </section>
+</main>
+
+<div class="bottomBar">
+  <a href="tel:5144735315">📞 Appeler</a>
+  <a href="#soumission">🧾 Soumission</a>
 </div>
-<section class='hero' style="background-image:url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1800&q=80')"><div class='overlay'></div><div class='heroContent'><h2>Service de nettoyage premium</h2><p>Découvrez tous nos services professionnels.</p></div></section><section class='section'><div class='title'><h2>Nos services</h2></div><div class='cards'><a class='card' href='bureaux.html'><img src='https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80'><h3>Bureaux</h3></a><a class='card' href='commerces.html'><img src='https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=900&q=80'><h3>Commerces</h3></a><a class='card' href='residentiel.html'><img src='https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80'><h3>Résidentiel</h3></a></div></section>
-<footer>
-<img src="logo.jpeg">
-<h2>Didier.Elo Multi Service Inc</h2>
-<p>📞 514 473 5315 / 438 836 7993</p>
-</footer>
-<script>function openMenu(){document.getElementById('sideMenu').classList.add('active')}function closeMenu(){document.getElementById('sideMenu').classList.remove('active')}</script>
-<section class='section'>
-<div class='title'>
-<h2>Soumission gratuite</h2>
-</div>
 
-<div class='card' style='max-width:1000px;margin:auto'>
-<form id="quoteForm" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-<input name="name" required placeholder="Nom complet" style="padding:18px;border-radius:16px;border:1px solid #d8e6f4">
-<input name="phone" required placeholder="Téléphone" style="padding:18px;border-radius:16px;border:1px solid #d8e6f4">
-<input name="email" type="email" placeholder="Email" style="padding:18px;border-radius:16px;border:1px solid #d8e6f4">
-<select name="service" required style="padding:18px;border-radius:16px;border:1px solid #d8e6f4">
-<option value="">Choisir un service</option>
-<option>Bureaux</option>
-<option>Commerces</option>
-<option>Résidentiel</option>
-<option>Airbnb</option>
-<option>Après construction</option>
-<option>Grand ménage</option>
-</select>
-<input name="address" placeholder="Adresse" style="padding:18px;border-radius:16px;border:1px solid #d8e6f4">
-<input name="date" type="date" style="padding:18px;border-radius:16px;border:1px solid #d8e6f4">
-<textarea name="message" placeholder="Message" style="grid-column:1/-1;height:140px;padding:18px;border-radius:16px;border:1px solid #d8e6f4"></textarea>
-<button id="submitBtn" type="submit" style="grid-column:1/-1;padding:20px;background:#00a8ff;color:white;border:none;border-radius:18px;font-weight:700">Envoyer la demande</button>
-<p id="formStatus" style="grid-column:1/-1;text-align:center;font-weight:700"></p>
-</form>
-</div>
-</section>
-
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-const firebaseConfig = {
-apiKey:"AIzaSyCz1BC9YSHQsBB1kBRWy8TdLqs2D7ytOiA",
-authDomain:"dedie-menage.firebaseapp.com",
-projectId:"dedie-menage",
-storageBucket:"dedie-menage.firebasestorage.app",
-messagingSenderId:"745599536988",
-appId:"1:745599536988:web:c217af2d377cf70ffffb99"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-emailjs.init({ publicKey:"n4Ln13zFITFZtnmdL" });
-
-const form = document.getElementById("quoteForm");
-const statusEl = document.getElementById("formStatus");
-const submitBtn = document.getElementById("submitBtn");
-
-form.addEventListener("submit", async(e)=>{
-e.preventDefault();
-
-const data = Object.fromEntries(new FormData(form).entries());
-
-submitBtn.disabled = true;
-submitBtn.textContent = "Envoi en cours...";
-
-try{
-
-await addDoc(collection(db,"demandes_soumission"),{
-...data,
-createdAt: serverTimestamp()
-});
-
-await emailjs.send(
-"service_yxizoav",
-"template_7xcmars",
-data
-);
-
-statusEl.innerHTML = "✅ Demande envoyée avec succès";
-statusEl.style.color = "#00a86b";
-
-form.reset();
-
-}catch(error){
-
-console.error(error);
-
-statusEl.innerHTML = "❌ Erreur d'envoi";
-statusEl.style.color = "red";
-
-}
-
-submitBtn.disabled = false;
-submitBtn.textContent = "Envoyer la demande";
-
-});
-</script>
-</body></html>
+<footer>© Didier.Elo Multi Service Inc</footer>
+<script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,26 +1,7 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Après construction</title><link rel='stylesheet' href='style.css'></head><body>
-<header class="header">
-<div class="logoBox">
-<img src="logo.jpeg">
-<div><h1>Didier.Elo</h1><p>Multi Service Inc</p></div>
-</div>
-<div class="hamburger" onclick="openMenu()">☰</div>
-</header>
-<div class="sideMenu" id="sideMenu">
-<a onclick="closeMenu()">✕</a>
-<a href="index.html">Accueil</a>
-<a href="bureaux.html">Bureaux</a>
-<a href="commerces.html">Commerces</a>
-<a href="residentiel.html">Résidentiel</a>
-<a href="airbnb.html">Airbnb</a>
-<a href="construction.html">Après construction</a>
-<a href="grand-menage.html">Grand ménage</a>
-<a href="employes.html">Employés</a>
-</div>
-<section class='hero' style="background-image:url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1800&q=80')"><div class='overlay'></div><div class='heroContent'><h2>Après construction</h2><p>Service professionnel avec plusieurs photos et présentation premium.</p></div></section><section class='section'><div class='cards'><div class='card'><img src='https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=900&q=80'><h3>Après construction</h3><p>Service professionnel et résultat impeccable.</p></div><div class='card'><img src='https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=900&q=80'><h3>Qualité premium</h3><p>Travail propre et moderne.</p></div><div class='card'><img src='https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=80'><h3>Service rapide</h3><p>Équipe fiable et professionnelle.</p></div></div></section>
-<footer>
-<img src="logo.jpeg">
-<h2>Didier.Elo Multi Service Inc</h2>
-<p>📞 514 473 5315 / 438 836 7993</p>
-</footer>
-<script>function openMenu(){document.getElementById('sideMenu').classList.add('active')}function closeMenu(){document.getElementById('sideMenu').classList.remove('active')}</script></body></html>
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Après construction | Didier.Elo</title><link rel="icon" href="logo.jpeg"><link rel="stylesheet" href="style.css"></head><body>
+<header class="header"><a href="index.html" class="brand"><img src="logo.jpeg"><div><strong>Didier.Elo</strong><span>Multi Service Inc</span></div></a><button class="hamburger" id="openMenu">☰</button></header>
+<nav class="drawer" id="drawer"><button class="close" id="closeMenu">×</button><a href="index.html">Accueil</a><a href="bureaux.html">Bureaux</a><a href="commerces.html">Commerces</a><a href="residentiel.html">Résidentiel</a><a href="airbnb.html">Airbnb</a><a href="construction.html">Après construction</a><a href="grand-menage.html">Grand ménage</a><a href="employes.html">Employés</a></nav>
+<section class="hero" style="background-image:url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1600&q=80')"><div class="heroShade"></div><div class="heroContent"><span class="eyebrow">Après construction</span><h1>Après construction</h1><p>Service professionnel avec photos, présentation claire et résultat impeccable.</p><div class="heroButtons"><a class="btn primary" href="index.html#soumission">Demander une soumission</a><a class="btn secondary" href="tel:5144735315">Appeler</a></div></div></section>
+<section class="section"><div class="sectionHead"><span>Galerie</span><h2>Photos et service après construction</h2></div><div class="serviceGrid"><div class="serviceCard"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1600&q=80"><h3>Service professionnel</h3></div><div class="serviceCard"><img src="https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=900&q=80"><h3>Équipement propre</h3></div><div class="serviceCard"><img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=80"><h3>Résultat impeccable</h3></div></div></section>
+<section class="quoteSection"><div class="quoteHeader"><h2>Besoin de ce service ?</h2><p>Demandez une soumission rapide.</p><br><a class="btn primary" href="index.html#soumission">Soumission gratuite</a></div></section>
+<script>const drawer=document.getElementById("drawer");document.getElementById("openMenu").onclick=()=>drawer.classList.add("open");document.getElementById("closeMenu").onclick=()=>drawer.classList.remove("open");</script></body></html>

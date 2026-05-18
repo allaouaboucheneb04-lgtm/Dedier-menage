@@ -15,46 +15,37 @@ const db = getFirestore(app);
 
 emailjs.init({ publicKey: "n4Ln13zFITFZtnmdL" });
 
+const drawer = document.getElementById("drawer");
+document.getElementById("openMenu").onclick = () => drawer.classList.add("open");
+document.getElementById("closeMenu").onclick = () => drawer.classList.remove("open");
+drawer.querySelectorAll("a").forEach(a => a.onclick = () => drawer.classList.remove("open"));
+
 const form = document.getElementById("quoteForm");
 const statusEl = document.getElementById("formStatus");
 const submitBtn = document.getElementById("submitBtn");
 
-form.addEventListener("submit", async(e)=>{
-e.preventDefault();
-
-const data = Object.fromEntries(new FormData(form).entries());
-
-submitBtn.disabled = true;
-submitBtn.textContent = "Envoi en cours...";
-
-try{
-
-await addDoc(collection(db,"demandes_soumission"),{
-...data,
-createdAt: serverTimestamp()
-});
-
-await emailjs.send(
-"service_yxizoav",
-"template_7xcmars",
-data
-);
-
-statusEl.innerHTML = "✅ Demande envoyée avec succès";
-statusEl.style.color = "#00a86b";
-
-form.reset();
-
-}catch(error){
-
-console.error(error);
-
-statusEl.innerHTML = "❌ Erreur d'envoi";
-statusEl.style.color = "red";
-
-}
-
-submitBtn.disabled = false;
-submitBtn.textContent = "Envoyer la demande";
-
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(form).entries());
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Envoi en cours...";
+  statusEl.textContent = "";
+  try {
+    await addDoc(collection(db, "demandes_soumission"), {
+      ...data,
+      source: "site_web",
+      createdAt: serverTimestamp()
+    });
+    await emailjs.send("service_yxizoav", "template_7xcmars", data);
+    statusEl.textContent = "✅ Demande envoyée avec succès.";
+    statusEl.style.color = "#078b45";
+    form.reset();
+  } catch (error) {
+    console.error(error);
+    statusEl.textContent = "❌ Erreur d’envoi. Vérifiez Firebase / EmailJS.";
+    statusEl.style.color = "#d21f3c";
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Envoyer la demande";
+  }
 });
