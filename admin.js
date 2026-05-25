@@ -5,7 +5,6 @@ import {
   addDoc, updateDoc, serverTimestamp, query, orderBy, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import { firebaseConfig, ROLES_COLLECTION, QUOTES_COLLECTION, TASKS_COLLECTION } from "./firebase-config.js";
-import { initNotifications, showLocalNotification } from "./notifications.js";
 
 const INVITES_COLLECTION = "invites";
 
@@ -47,7 +46,15 @@ onAuthStateChanged(auth, async (user) => {
 
     const notifBtn = $("enableNotificationsBtn");
     if (notifBtn) {
-      notifBtn.onclick = () => initNotifications(app, db, user, "admin");
+      notifBtn.onclick = async () => {
+        try {
+          const mod = await import("./notifications.js");
+          await mod.initNotifications(app, db, user, "admin");
+        } catch (error) {
+          console.error("Notifications module error:", error);
+          alert("Erreur notifications, mais admin fonctionne.");
+        }
+      };
     }
 
     const refreshQuotes = $("refreshQuotes");
@@ -316,7 +323,7 @@ function setupAdminRealtimeNotifications() {
       snap.docChanges().forEach((change) => {
         if (change.type === "added") {
           const q = change.doc.data();
-          showLocalNotification(
+          safeNotify(
             "Nouvelle soumission Didier.Elo",
             `${q.name || "Client"} - ${q.service || "Service"}`
           );
@@ -349,4 +356,14 @@ function escapeHtml(value) {
     '"': "&quot;",
     "'": "&#039;"
   }[m]));
+}
+
+
+async function safeNotify(title, body) {
+  try {
+    const mod = await import("./notifications.js");
+    mod.safeNotify(title, body);
+  } catch (error) {
+    console.warn("Notification skipped:", error);
+  }
 }

@@ -1,11 +1,16 @@
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", async () => {
     try {
-      const reg = await navigator.serviceWorker.register("./firebase-messaging-sw.js");
-      await reg.update();
-      console.log("PWA service worker registered/updated");
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      for (const reg of registrations) {
+        if (reg.active && reg.active.scriptURL.includes("firebase-messaging-sw.js")) {
+          await reg.update();
+        }
+      }
+      await navigator.serviceWorker.register("./firebase-messaging-sw.js", { scope: "./" });
+      console.log("PWA service worker ok");
     } catch (error) {
-      console.error("PWA service worker error:", error);
+      console.warn("PWA service worker skipped:", error);
     }
   });
 }

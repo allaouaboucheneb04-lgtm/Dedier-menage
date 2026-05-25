@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Debug Didier.Elo</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="adminBody">
+<main class="adminMain">
+<section class="panel">
+<h1>Debug Didier.Elo</h1>
+<p>Si cette page s'affiche, HTML/CSS fonctionne.</p>
+<button id="testBtn" class="smallBtn">Tester Firebase config</button>
+<pre id="out"></pre>
+</section>
+</main>
+<script type="module">
+import { firebaseConfig, ROLES_COLLECTION, QUOTES_COLLECTION, TASKS_COLLECTION, VAPID_KEY } from "./firebase-config.js";
+document.getElementById("testBtn").onclick = () => {
+  document.getElementById("out").textContent = JSON.stringify({
+    projectId: firebaseConfig.projectId,
+    roles: ROLES_COLLECTION,
+    quotes: QUOTES_COLLECTION,
+    tasks: TASKS_COLLECTION,
+    vapid: VAPID_KEY ? "présente" : "absente"
+  }, null, 2);
+};
+</script>
+</body>
+</html>

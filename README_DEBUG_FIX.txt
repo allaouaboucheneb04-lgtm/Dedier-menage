@@ -1,0 +1,1 @@
+Correction: notifications chargées dynamiquement pour ne plus casser admin.js; fetch cache du service worker désactivé pour éviter bugs après suppression cache. Ajout debug.html.
