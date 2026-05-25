@@ -14,4 +14,5 @@ export const TASKS_COLLECTION = "taches";
 
 // IMPORTANT: Remplace par ta clé VAPID Firebase Cloud Messaging.
 // Firebase Console > Project settings > Cloud Messaging > Web Push certificates > Generate key pair
+
 export const VAPID_KEY = "BP11TmYg0QdKbduM_KDvbLoYhjAHIND9MtRkc7A30_tAgOWys7jyopBYN5lYMYlx96v5X4fgjJcbO3Y_6t3ezjs";

@@ -1,0 +1,1 @@
+Correction bug affichage admin mobile: les boutons du header ne débordent plus, email tronqué proprement, top bar responsive. Clé VAPID conservée.
