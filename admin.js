@@ -47,19 +47,14 @@ onAuthStateChanged(auth, async (user) => {
   const notifBtn = $("enableNotificationsBtn");
   if (notifBtn) {
     notifBtn.onclick = async () => {
-        try {
-          notifBtn.disabled = true;
-          notifBtn.textContent = "Activation...";
-          const mod = await import("./notifications.js");
-          await mod.initNotifications(app, db, user, "admin");
-        } catch (error) {
-          console.error("Notifications module error:", error);
-          alert("Erreur notifications: " + (error.message || error));
-        } finally {
-          notifBtn.disabled = false;
-          notifBtn.textContent = "🔔 Notifications";
-        }
-      };
+      try {
+        const mod = await import("./notifications.js");
+        await mod.initNotifications(app, db, user, "admin");
+      } catch (error) {
+        console.error(error);
+        alert("Erreur notifications, mais admin fonctionne.");
+      }
+    };
   }
 
   const refreshQuotes = $("refreshQuotes");

@@ -1,0 +1,1 @@
+Version stable: site/admin ne plante plus. Notifications par bouton.

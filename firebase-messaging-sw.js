@@ -15,24 +15,17 @@ self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim(
 
 try {
   const messaging = firebase.messaging();
-
   messaging.onBackgroundMessage((payload) => {
-    const title = payload.notification?.title || "Didier.Elo";
-    const options = {
+    self.registration.showNotification(payload.notification?.title || "Didier.Elo", {
       body: payload.notification?.body || "Nouvelle notification",
       icon: "./logo.jpeg",
       badge: "./logo.jpeg",
-      data: payload.data || {},
-      vibrate: [200, 100, 200]
-    };
-    self.registration.showNotification(title, options);
+      data: payload.data || {}
+    });
   });
-} catch (error) {
-  console.log("FCM background unavailable", error);
-}
+} catch (error) {}
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const target = event.notification?.data?.url || "./login.html";
-  event.waitUntil(clients.openWindow(target));
+  event.waitUntil(clients.openWindow("./login.html"));
 });
