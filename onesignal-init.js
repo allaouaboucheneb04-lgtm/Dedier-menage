@@ -4,7 +4,7 @@
 // 3) Mets le domaine exact de ton site dans OneSignal:
 //    https://allaouaboucheneb04-lgtm.github.io
 
-const DIDIER_ELO_ONESIGNAL_APP_ID = "REMPLACE_PAR_TON_ONESIGNAL_APP_ID";
+const DIDIER_ELO_ONESIGNAL_APP_ID = "6c4e8421-6a3f-48e1-948c-f7a5d07ed234";
 
 function setOneSignalStatus(message, ok = true) {
   let el = document.getElementById("notificationStatus");
