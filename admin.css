@@ -11,3 +11,12 @@ body.adminBody{background:#eef6ff;color:#071f3d;padding-bottom:0}.adminTop{posit
   .topActions{display:grid;grid-template-columns:1fr;align-items:stretch}
   .topActions .smallBtn{text-align:center}
 }
+
+.assignRow.oneButton{
+  grid-template-columns:1fr;
+}
+.assignRow.oneButton .smallBtn{
+  width:100%;
+  font-size:1.05rem;
+  padding:16px;
+}

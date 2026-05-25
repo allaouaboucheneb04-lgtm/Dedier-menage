@@ -206,7 +206,12 @@ async function loadTasks() {
   }
 
   const docs = [];
-  snap.forEach((d) => docs.push({ id: d.id, ...d.data() }));
+  snap.forEach((d) => {
+    const data = d.data();
+    if (data.status !== "terminé") {
+      docs.push({ id: d.id, ...data });
+    }
+  });
   $("countTasks").textContent = docs.length;
 
   if (!docs.length) {

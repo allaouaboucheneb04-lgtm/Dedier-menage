@@ -1,0 +1,1 @@
+Employé: bouton Commencer devient Terminé. Quand Terminé est cliqué, la tâche passe en historique et disparaît de la page employé/admin active.

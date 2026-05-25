@@ -42,7 +42,12 @@ async function loadTasks() {
 
   const snap = await getDocs(query(collection(db, TASKS_COLLECTION), where("employeeId", "==", currentUser.uid)));
   const tasks = [];
-  snap.forEach((d) => tasks.push({ id: d.id, ...d.data() }));
+  snap.forEach((d) => {
+    const data = d.data();
+    if (data.status !== "terminé") {
+      tasks.push({ id: d.id, ...data });
+    }
+  });
 
   if (!tasks.length) {
     list.innerHTML = "<p>Aucun travail assigné pour le moment.</p>";
@@ -71,23 +76,30 @@ async function loadTasks() {
 }
 
 function taskCard(t) {
+  const isStarted = t.status === "en cours";
+  const mainButtonLabel = isStarted ? "Terminé" : "Commencer";
+  const mainButtonStatus = isStarted ? "terminé" : "en cours";
+
   return `
     <article class="adminCard">
       <div class="cardTop">
         <h3>${escapeHtml(t.clientName || "Client")}</h3>
-        <span class="status">${escapeHtml(t.status || "-")}</span>
+        <span class="status">${escapeHtml(t.status || "assigné")}</span>
       </div>
       <p><b>Service:</b> ${escapeHtml(t.service || "-")}</p>
       <p><b>Adresse:</b> ${escapeHtml(t.address || "-")}</p>
       <p><b>Date:</b> ${escapeHtml(t.date || "-")}</p>
       <p><b>Téléphone:</b> <a href="tel:${escapeHtml(t.phone || "")}">${escapeHtml(t.phone || "-")}</a></p>
       <p><b>Message:</b> ${escapeHtml(t.message || "-")}</p>
+
       <label class="noteLabel">Note employé
         <textarea data-note="${t.id}" placeholder="Ajouter une note...">${escapeHtml(t.notes || "")}</textarea>
       </label>
-      <div class="assignRow">
-        <button class="smallBtn" data-task="${t.id}" data-status="en cours">Commencer</button>
-        <button class="smallBtn ok" data-task="${t.id}" data-status="terminé">Terminé</button>
+
+      <div class="assignRow oneButton">
+        <button class="smallBtn ${isStarted ? "ok" : ""}" data-task="${t.id}" data-status="${mainButtonStatus}">
+          ${mainButtonLabel}
+        </button>
       </div>
     </article>
   `;
