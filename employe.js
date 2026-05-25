@@ -18,6 +18,22 @@ onAuthStateChanged(auth, async (user) => {
   if (!user) return window.location.href = "login.html";
 
   currentUser = user;
+  const notifBtn = document.getElementById("enableNotificationsBtn");
+  if (notifBtn) {
+    notifBtn.onclick = async () => {
+      try {
+        notifBtn.disabled = true;
+        notifBtn.textContent = "Activation...";
+        const mod = await import("./notifications.js");
+        await mod.initNotifications(app, db, user, "employe");
+      } catch (error) {
+        alert("Erreur notifications: " + (error.message || error));
+      } finally {
+        notifBtn.disabled = false;
+        notifBtn.textContent = "🔔 Notifications";
+      }
+    };
+  }
   $("employeeEmail").textContent = user.email || user.uid;
 
   const roleSnap = await getDoc(doc(db, ROLES_COLLECTION, user.uid));

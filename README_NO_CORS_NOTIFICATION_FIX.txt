@@ -1,0 +1,1 @@
+Correction: suppression des scripts compat qui causaient CORS-cross-origin. Notifications module seulement. Si iPhone ne supporte pas FCM, le message l’indiquera sans casser le site. Page test: notification-test.html.
