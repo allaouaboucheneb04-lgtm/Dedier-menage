@@ -1,16 +1,20 @@
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", async () => {
     try {
-      const registrations = await navigator.serviceWorker.getRegistrations();
-      for (const reg of registrations) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+
+      // Nettoie les anciens SW avec cache/fetch qui causaient le bug
+      for (const reg of regs) {
         if (reg.active && reg.active.scriptURL.includes("firebase-messaging-sw.js")) {
-          await reg.update();
+          await reg.unregister();
         }
       }
-      await navigator.serviceWorker.register("./firebase-messaging-sw.js", { scope: "./" });
-      console.log("PWA service worker ok");
+
+      const reg = await navigator.serviceWorker.register("./firebase-messaging-sw.js", { scope: "./" });
+      await reg.update();
+      console.log("Service worker propre installé");
     } catch (error) {
-      console.warn("PWA service worker skipped:", error);
+      console.warn("Service worker ignoré:", error);
     }
   });
 }

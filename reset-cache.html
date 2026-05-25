@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reset Cache</title></head>
+<body style="font-family:Arial;padding:30px">
+<h1>Reset Cache Didier.Elo</h1>
+<button id="btn" style="font-size:22px;padding:15px 25px">Nettoyer et retourner au login</button>
+<pre id="out"></pre>
+<script>
+document.getElementById("btn").onclick = async () => {
+  const out = document.getElementById("out");
+  try {
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      for (const r of regs) await r.unregister();
+    }
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      for (const k of keys) await caches.delete(k);
+    }
+    localStorage.clear();
+    sessionStorage.clear();
+    out.textContent = "OK nettoyé. Redirection...";
+    setTimeout(()=>location.href="login.html", 800);
+  } catch(e) {
+    out.textContent = e.message;
+  }
+};
+</script>
+</body>
+</html>

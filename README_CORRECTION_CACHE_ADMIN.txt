@@ -1,0 +1,1 @@
+Correction: suppression interception cache service worker, désinstallation anciens SW, admin.js robuste, redirection login si auth perdue, scripts versionnés. Si bug persiste ouvrir reset-cache.html puis cliquer nettoyer.

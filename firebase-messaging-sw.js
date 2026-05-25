@@ -15,6 +15,9 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(self.clients.claim());
 });
 
+// IMPORTANT: pas de fetch/cache ici.
+// Comme ça, admin.html/admin.js reviennent toujours du serveur et ne restent pas bloqués.
+
 try {
   const messaging = firebase.messaging();
 
@@ -36,15 +39,6 @@ try {
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-
   const target = event.notification?.data?.url || "./login.html";
-
-  event.waitUntil(
-    clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
-      for (const client of clientList) {
-        if ("focus" in client) return client.focus();
-      }
-      if (clients.openWindow) return clients.openWindow(target);
-    })
-  );
+  event.waitUntil(clients.openWindow(target));
 });
