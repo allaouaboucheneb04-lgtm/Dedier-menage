@@ -20,3 +20,16 @@ body.adminBody{background:#eef6ff;color:#071f3d;padding-bottom:0}.adminTop{posit
   font-size:1.05rem;
   padding:16px;
 }
+
+.adminCard a,
+.footerLuxury a,
+.contactItem a,
+.contactContent a{
+  color:inherit;
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+.adminCard a{
+  color:#006bd6;
+  font-weight:900;
+}

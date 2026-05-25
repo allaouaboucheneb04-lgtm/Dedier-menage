@@ -87,7 +87,7 @@ function taskCard(t) {
         <span class="status">${escapeHtml(t.status || "assigné")}</span>
       </div>
       <p><b>Service:</b> ${escapeHtml(t.service || "-")}</p>
-      <p><b>Adresse:</b> ${escapeHtml(t.address || "-")}</p>
+      <p><b>Adresse:</b> ${mapLink(t.address)}</p>
       <p><b>Date:</b> ${escapeHtml(t.date || "-")}</p>
       <p><b>Téléphone:</b> <a href="tel:${escapeHtml(t.phone || "")}">${escapeHtml(t.phone || "-")}</a></p>
       <p><b>Message:</b> ${escapeHtml(t.message || "-")}</p>
@@ -103,6 +103,19 @@ function taskCard(t) {
       </div>
     </article>
   `;
+}
+
+
+function phoneLink(phone) {
+  if (!phone) return "-";
+  const clean = String(phone).replace(/[^\d+]/g, "");
+  return `<a href="tel:${clean}">${escapeHtml(phone)}</a>`;
+}
+
+function mapLink(address) {
+  if (!address) return "-";
+  const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+  return `<a href="${url}" target="_blank" rel="noopener">${escapeHtml(address)}</a>`;
 }
 
 function escapeHtml(value) {

@@ -180,7 +180,7 @@ function quoteCard(q) {
       <p><b>Service:</b> ${escapeHtml(q.service || "-")}</p>
       <p><b>Téléphone:</b> <a href="tel:${escapeHtml(q.phone || "")}">${escapeHtml(q.phone || "-")}</a></p>
       <p><b>Email:</b> ${escapeHtml(q.email || "-")}</p>
-      <p><b>Adresse:</b> ${escapeHtml(q.address || "-")}</p>
+      <p><b>Adresse:</b> ${mapLink(q.address)}</p>
       <p><b>Date:</b> ${escapeHtml(q.date || "-")}</p>
       <p><b>Message:</b> ${escapeHtml(q.message || "-")}</p>
       <div class="assignRow">
@@ -247,8 +247,8 @@ function taskCard(t) {
       </div>
       <p><b>Employé:</b> ${escapeHtml(t.employeeName || "-")}</p>
       <p><b>Service:</b> ${escapeHtml(t.service || "-")}</p>
-      <p><b>Adresse:</b> ${escapeHtml(t.address || "-")}</p>
-      <p><b>Téléphone:</b> ${escapeHtml(t.phone || "-")}</p>
+      <p><b>Adresse:</b> ${mapLink(t.address)}</p>
+      <p><b>Téléphone:</b> ${phoneLink(t.phone)}</p>
       <div class="assignRow">
         <button class="smallBtn" data-task="${t.id}" data-status="assigné">Assigné</button>
         <button class="smallBtn" data-task="${t.id}" data-status="en cours">En cours</button>
@@ -256,6 +256,19 @@ function taskCard(t) {
       </div>
     </article>
   `;
+}
+
+
+function phoneLink(phone) {
+  if (!phone) return "-";
+  const clean = String(phone).replace(/[^\d+]/g, "");
+  return `<a href="tel:${clean}">${escapeHtml(phone)}</a>`;
+}
+
+function mapLink(address) {
+  if (!address) return "-";
+  const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+  return `<a href="${url}" target="_blank" rel="noopener">${escapeHtml(address)}</a>`;
 }
 
 function escapeHtml(value) {

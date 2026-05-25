@@ -1,0 +1,1 @@
+Téléphone cliquable avec tel: et adresse cliquable vers Google Maps dans les pages publiques, admin, employé et historique.
