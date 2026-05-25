@@ -18,51 +18,55 @@ let firstAdminSnapshot = true;
 
 const $ = (id) => document.getElementById(id);
 
-function showError(msg) {
-  console.error(msg);
-  const q = $("quotesList");
-  if (q) q.innerHTML = `<p style="color:#d21f3c;font-weight:900;">${escapeHtml(msg)}</p>`;
+function setText(id, value) {
+  const el = $(id);
+  if (el) el.textContent = value;
+}
+
+function showDebug(message, error = false) {
+  let box = $("adminDebugBox");
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "adminDebugBox";
+    box.className = "notificationStatus";
+    const main = document.querySelector(".adminMain");
+    if (main) main.prepend(box);
+  }
+  box.style.color = error ? "#d21f3c" : "#078b45";
+  box.textContent = message;
 }
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    window.location.replace("login.html");
+    location.replace("login.html");
     return;
   }
 
   currentUser = user;
-  if ($("adminEmail")) $("adminEmail").textContent = user.email || user.uid;
+  setText("adminEmail", user.email || user.uid);
 
   const logoutBtn = $("logoutBtn");
   if (logoutBtn) {
     logoutBtn.onclick = async () => {
-      try {
-        await signOut(auth);
-      } finally {
-        window.location.replace("login.html");
-      }
+      await signOut(auth);
+      location.replace("login.html");
     };
   }
 
   const notifBtn = $("enableNotificationsBtn");
-    if (notifBtn) {
-      notifBtn.onclick = async () => {
-        try {
-          notifBtn.disabled = true;
-          notifBtn.textContent = "Activation...";
-          const mod = await import("./notifications.js");
-          await mod.initNotifications(app, db, user, "admin");
-        } catch (error) {
-          console.error(error);
-          alert("Erreur notifications: " + (error.message || error));
-        } finally {
-          notifBtn.disabled = false;
-          notifBtn.textContent = "🔔 Notifications";
-        }
-      };
-    } catch (error) {
+  if (notifBtn) {
+    notifBtn.onclick = async () => {
+      try {
+        notifBtn.disabled = true;
+        notifBtn.textContent = "Activation...";
+        const mod = await import("./notifications.js");
+        await mod.initNotifications(app, db, user, "admin");
+      } catch (error) {
         console.error(error);
-        alert("Erreur notifications, mais admin fonctionne.");
+        alert("Erreur notifications: " + (error.message || error));
+      } finally {
+        notifBtn.disabled = false;
+        notifBtn.textContent = "🔔 Notifications";
       }
     };
   }
@@ -77,18 +81,17 @@ onAuthStateChanged(auth, async (user) => {
     const roleSnap = await getDoc(doc(db, ROLES_COLLECTION, user.uid));
 
     if (!roleSnap.exists() || roleSnap.data().role !== "admin") {
-      alert("Accès admin refusé. Vérifie users/" + user.uid + " dans Firestore.");
+      alert("Accès admin refusé. Vérifie Firestore > users > " + user.uid + " avec role: admin");
       await signOut(auth);
-      window.location.replace("login.html");
+      location.replace("login.html");
       return;
     }
 
     await loadAll();
-    setupAdminRealtimeNotifications();
-
+    setupRealtimeQuotes();
   } catch (error) {
     console.error(error);
-    showError("Erreur Firestore/admin. Vérifie les règles Firestore et la connexion.");
+    showDebug("Erreur chargement admin. Vérifie les rules Firestore.", true);
   }
 });
 
@@ -105,13 +108,15 @@ async function loadEmployees() {
 
     snap.forEach((d) => {
       const data = d.data();
-      if (data.role === "employe") employees.push({ id: d.id, ...data });
+      if (data.role === "employe") {
+        employees.push({ id: d.id, ...data });
+      }
     });
 
-    if ($("countEmployees")) $("countEmployees").textContent = employees.length;
+    setText("countEmployees", employees.length);
   } catch (error) {
     console.error("loadEmployees", error);
-    if ($("countEmployees")) $("countEmployees").textContent = "!";
+    setText("countEmployees", "!");
   }
 }
 
@@ -123,8 +128,7 @@ if (inviteForm) {
     const data = Object.fromEntries(new FormData(e.target).entries());
     const code = crypto.randomUUID().slice(0, 8).toUpperCase();
     const cleanEmail = data.email.trim().toLowerCase();
-    const baseUrl = location.href.replace("admin.html", "");
-    const link = `${baseUrl}invite.html?code=${code}`;
+    const link = `${location.origin}${location.pathname.replace("admin.html", "")}invite.html?code=${code}`;
 
     try {
       await setDoc(doc(db, INVITES_COLLECTION, code), {
@@ -138,31 +142,33 @@ if (inviteForm) {
         inviteLink: link
       });
 
-      if ($("inviteStatus")) {
-        $("inviteStatus").textContent = "✅ Invitation créée. Copie le lien et envoie-le à l’employé.";
-        $("inviteStatus").style.color = "#078b45";
+      const status = $("inviteStatus");
+      if (status) {
+        status.textContent = "✅ Invitation créée. Copie le lien et envoie-le à l’employé.";
+        status.style.color = "#078b45";
       }
 
       if ($("inviteResult")) $("inviteResult").hidden = false;
       if ($("inviteLink")) $("inviteLink").value = link;
-
       e.target.reset();
     } catch (error) {
       console.error(error);
-      if ($("inviteStatus")) {
-        $("inviteStatus").textContent = "❌ Erreur création invitation.";
-        $("inviteStatus").style.color = "#d21f3c";
+      const status = $("inviteStatus");
+      if (status) {
+        status.textContent = "❌ Erreur création invitation.";
+        status.style.color = "#d21f3c";
       }
     }
   });
 }
 
-if ($("copyInvite")) {
-  $("copyInvite").addEventListener("click", async () => {
+const copyInvite = $("copyInvite");
+if (copyInvite) {
+  copyInvite.onclick = async () => {
     await navigator.clipboard.writeText($("inviteLink").value);
     $("inviteStatus").textContent = "✅ Lien copié.";
     $("inviteStatus").style.color = "#078b45";
-  });
+  };
 }
 
 async function loadQuotes() {
@@ -175,26 +181,27 @@ async function loadQuotes() {
     let snap;
     try {
       snap = await getDocs(query(collection(db, QUOTES_COLLECTION), orderBy("createdAt", "desc")));
-    } catch (error) {
-      console.warn("orderBy createdAt bloqué, fallback simple", error);
+    } catch (e) {
+      console.warn("Fallback no orderBy", e);
       snap = await getDocs(collection(db, QUOTES_COLLECTION));
     }
 
     const docs = [];
     snap.forEach((d) => docs.push({ id: d.id, ...d.data() }));
 
-    if ($("countQuotes")) $("countQuotes").textContent = docs.length;
+    setText("countQuotes", docs.length);
 
     if (!docs.length) {
-      list.innerHTML = "<p>Aucune soumission pour le moment. Fais un test depuis le formulaire client.</p>";
-      showAdminDebug("Admin connecté. Aucune soumission trouvée dans Firestore.", false);
+      list.innerHTML = "<p>Aucune soumission pour le moment.</p>";
+      showDebug("Admin connecté. Aucune soumission trouvée.");
       return;
     }
 
-    list.innerHTML = docs.map((q) => quoteCard(q)).join("");
+    showDebug("Admin connecté. Soumissions chargées: " + docs.length);
+    list.innerHTML = docs.map(quoteCard).join("");
 
     list.querySelectorAll("[data-assign]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
+      btn.onclick = async () => {
         const quoteId = btn.dataset.assign;
         const select = document.querySelector(`[data-employee-select="${quoteId}"]`);
         const emp = employees.find(e => e.id === select.value);
@@ -232,12 +239,13 @@ async function loadQuotes() {
 
         alert("Travail assigné ✅");
         await loadAll();
-      });
+      };
     });
   } catch (error) {
     console.error("loadQuotes", error);
-    list.innerHTML = `<p style="color:#d21f3c;font-weight:900;">Erreur chargement soumissions. Vérifie Firestore Rules.</p>`;
-    showAdminDebug("Erreur Firestore: impossible de lire demandes_soumission.", true);
+    setText("countQuotes", "!");
+    list.innerHTML = `<p style="color:#d21f3c;font-weight:900;">Erreur chargement soumissions. Vérifie les rules Firestore.</p>`;
+    showDebug("Erreur Firestore: demandes_soumission bloqué.", true);
   }
 }
 
@@ -287,7 +295,7 @@ async function loadTasks() {
       if (data.status !== "terminé") docs.push({ id: d.id, ...data });
     });
 
-    if ($("countTasks")) $("countTasks").textContent = docs.length;
+    setText("countTasks", docs.length);
 
     if (!docs.length) {
       list.innerHTML = "<p>Aucun travail actif.</p>";
@@ -297,15 +305,17 @@ async function loadTasks() {
     list.innerHTML = docs.map(taskCard).join("");
 
     list.querySelectorAll("[data-status]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
+      btn.onclick = async () => {
         const updateData = { status: btn.dataset.status, updatedAt: serverTimestamp() };
         if (btn.dataset.status === "terminé") updateData.completedAt = serverTimestamp();
+
         await updateDoc(doc(db, TASKS_COLLECTION, btn.dataset.task), updateData);
         await loadTasks();
-      });
+      };
     });
   } catch (error) {
     console.error("loadTasks", error);
+    setText("countTasks", "!");
     list.innerHTML = `<p style="color:#d21f3c;font-weight:900;">Erreur chargement travaux.</p>`;
   }
 }
@@ -330,10 +340,9 @@ function taskCard(t) {
   `;
 }
 
-function setupAdminRealtimeNotifications() {
+function setupRealtimeQuotes() {
   try {
     const q = query(collection(db, QUOTES_COLLECTION), orderBy("createdAt", "desc"));
-
     onSnapshot(q, (snap) => {
       if (firstAdminSnapshot) {
         firstAdminSnapshot = false;
@@ -342,24 +351,21 @@ function setupAdminRealtimeNotifications() {
 
       snap.docChanges().forEach(async (change) => {
         if (change.type === "added") {
-          const q = change.doc.data();
-          await safeNotify("Nouvelle soumission Didier.Elo", `${q.name || "Client"} - ${q.service || "Service"}`);
+          await safeNotify("Nouvelle soumission Didier.Elo", "Nouvelle demande reçue.");
           loadQuotes();
         }
       });
-    }, (error) => console.warn("onSnapshot admin désactivé:", error));
+    }, (error) => console.warn("Realtime désactivé:", error));
   } catch (error) {
-    console.warn("Realtime admin notification skipped:", error);
+    console.warn("Realtime impossible:", error);
   }
 }
 
 async function safeNotify(title, body) {
   try {
     const mod = await import("./notifications.js");
-    mod.safeNotify(title, body);
-  } catch (error) {
-    console.warn("Notification skipped:", error);
-  }
+    mod.showLocalNotification(title, body);
+  } catch (e) {}
 }
 
 function phoneLink(phone) {
@@ -378,19 +384,4 @@ function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (m) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
   }[m]));
-}
-
-
-function showAdminDebug(message, isError = false) {
-  let box = document.getElementById("adminDebugBox");
-  if (!box) {
-    box = document.createElement("div");
-    box.id = "adminDebugBox";
-    box.style.cssText = "margin:14px 5%;padding:14px;border-radius:16px;font-weight:900;text-align:center;";
-    const main = document.querySelector(".adminMain");
-    if (main) main.prepend(box);
-  }
-  box.style.background = isError ? "#ffe8e8" : "#e8f6ff";
-  box.style.color = isError ? "#d21f3c" : "#006bd6";
-  box.textContent = message;
 }

@@ -1,35 +1,3 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reset Cache Didier.Elo</title>
-</head>
-<body style="font-family:Arial;padding:30px">
-<h1>Nettoyage cache Didier.Elo</h1>
-<button id="btn" style="font-size:22px;padding:16px 24px;border-radius:12px;background:#006bd6;color:white;border:0;font-weight:900">Nettoyer et retourner au login</button>
-<pre id="out" style="white-space:pre-wrap;margin-top:20px"></pre>
-<script>
-document.getElementById("btn").onclick = async () => {
-  const out = document.getElementById("out");
-  try {
-    out.textContent = "Nettoyage en cours...";
-    if ("caches" in window) {
-      const keys = await caches.keys();
-      for (const k of keys) await caches.delete(k);
-    }
-    if ("serviceWorker" in navigator) {
-      const regs = await navigator.serviceWorker.getRegistrations();
-      for (const r of regs) await r.unregister();
-    }
-    localStorage.clear();
-    sessionStorage.clear();
-    out.textContent = "OK. Ferme l'app, rouvre-la, puis connecte-toi.";
-    setTimeout(() => location.href = "login.html?fresh=" + Date.now(), 1200);
-  } catch(e) {
-    out.textContent = "Erreur: " + e.message;
-  }
-};
-</script>
-</body>
-</html>
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reset</title></head><body style="font-family:Arial;padding:30px"><h1>Reset Didier.Elo</h1><button id="b" style="font-size:22px;padding:16px;border-radius:12px;background:#006bd6;color:#fff;border:0">Nettoyer</button><pre id="o"></pre><script>
+document.getElementById("b").onclick=async()=>{const o=document.getElementById("o");try{if("caches"in window){for(const k of await caches.keys())await caches.delete(k)}if("serviceWorker"in navigator){for(const r of await navigator.serviceWorker.getRegistrations())await r.unregister()}localStorage.clear();sessionStorage.clear();o.textContent="OK";setTimeout(()=>location.href="login.html?fresh="+Date.now(),800)}catch(e){o.textContent=e.message}}
+</script></body></html>

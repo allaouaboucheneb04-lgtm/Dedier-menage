@@ -5,6 +5,7 @@ import {
   updateDoc, serverTimestamp, query, where, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import { firebaseConfig, ROLES_COLLECTION, TASKS_COLLECTION } from "./firebase-config.js";
+import { initNotifications, showLocalNotification } from "./notifications.js";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -18,22 +19,6 @@ onAuthStateChanged(auth, async (user) => {
   if (!user) return window.location.href = "login.html";
 
   currentUser = user;
-  const notifBtn = document.getElementById("enableNotificationsBtn");
-  if (notifBtn) {
-    notifBtn.onclick = async () => {
-      try {
-        notifBtn.disabled = true;
-        notifBtn.textContent = "Activation...";
-        const mod = await import("./notifications.js");
-        await mod.initNotifications(app, db, user, "employe");
-      } catch (error) {
-        alert("Erreur notifications: " + (error.message || error));
-      } finally {
-        notifBtn.disabled = false;
-        notifBtn.textContent = "🔔 Notifications";
-      }
-    };
-  }
   $("employeeEmail").textContent = user.email || user.uid;
 
   const roleSnap = await getDoc(doc(db, ROLES_COLLECTION, user.uid));
@@ -46,15 +31,7 @@ onAuthStateChanged(auth, async (user) => {
   setupEmployeeRealtimeNotifications();
 
   const notifBtn = document.getElementById("enableNotificationsBtn");
-  if (notifBtn) notifBtn.onclick = async () => {
-        try {
-          const mod = await import("./notifications.js");
-          await mod.initNotifications(app, db, user, "employe");
-        } catch (error) {
-          console.error("Notifications module error:", error);
-          alert("Erreur notifications, mais espace employé fonctionne.");
-        }
-      };
+  if (notifBtn) notifBtn.onclick = () => initNotifications(app, db, user, "employe");
 });
 
 $("logoutBtn").onclick = async () => {
@@ -171,7 +148,7 @@ function setupEmployeeRealtimeNotifications() {
       snap.docChanges().forEach((change) => {
         if (change.type === "added") {
           const t = change.doc.data();
-          safeNotify(
+          showLocalNotification(
             "Nouveau travail assigné",
             `${t.service || "Service"} - ${t.address || "Adresse"}`
           );
@@ -185,15 +162,5 @@ function setupEmployeeRealtimeNotifications() {
     });
   } catch (error) {
     console.error("Realtime employee notification error:", error);
-  }
-}
-
-
-async function safeNotify(title, body) {
-  try {
-    const mod = await import("./notifications.js");
-    mod.safeNotify(title, body);
-  } catch (error) {
-    console.warn("Notification skipped:", error);
   }
 }

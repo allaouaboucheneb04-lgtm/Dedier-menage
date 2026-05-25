@@ -1,0 +1,1 @@
+Version stable data: admin.js réécrit. Les notifications sont isolées et ne cassent pas les compteurs/soumissions.
