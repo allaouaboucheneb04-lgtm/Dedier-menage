@@ -56,19 +56,12 @@ onAuthStateChanged(auth, async (user) => {
   const notifBtn = $("enableNotificationsBtn");
   if (notifBtn) {
     notifBtn.onclick = async () => {
-      try {
-        notifBtn.disabled = true;
-        notifBtn.textContent = "Activation...";
-        const mod = await import("./notifications.js");
-        await mod.initNotifications(app, db, user, "admin");
-      } catch (error) {
-        console.error(error);
-        alert("Erreur notifications: " + (error.message || error));
-      } finally {
-        notifBtn.disabled = false;
-        notifBtn.textContent = "🔔 Notifications";
-      }
-    };
+        if (window.didierEloOneSignalSubscribe) {
+          await window.didierEloOneSignalSubscribe();
+        } else {
+          alert("OneSignal n’est pas encore configuré. Ajoute ton APP ID dans onesignal-init.js.");
+        }
+      };
   }
 
   const refreshQuotes = $("refreshQuotes");
@@ -364,7 +357,7 @@ function setupRealtimeQuotes() {
 async function safeNotify(title, body) {
   try {
     const mod = await import("./notifications.js");
-    mod.showLocalNotification(title, body);
+    mod.safeLocalNotify(title, body);
   } catch (e) {}
 }
 
@@ -384,4 +377,13 @@ function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (m) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
   }[m]));
+}
+
+
+async function safeLocalNotify(title, body) {
+  try {
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification(title, { body, icon: "logo.jpeg" });
+    }
+  } catch (e) {}
 }

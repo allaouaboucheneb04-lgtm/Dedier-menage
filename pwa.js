@@ -1,2 +1,13 @@
-// PWA: ne fait pas de cache. Les notifications enregistrent firebase-messaging-sw.js au clic.
-console.log("PWA loaded - no cache service worker");
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", async () => {
+    try {
+      if ("caches" in window) {
+        const keys = await caches.keys();
+        for (const k of keys) await caches.delete(k);
+      }
+      await navigator.serviceWorker.register("./firebase-messaging-sw.js", { scope: "./" });
+    } catch (e) {
+      console.warn("SW skipped", e);
+    }
+  });
+}

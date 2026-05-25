@@ -20,15 +20,12 @@ try {
       body: payload.notification?.body || "Nouvelle notification",
       icon: "./logo.jpeg",
       badge: "./logo.jpeg",
-      data: payload.data || {},
-      vibrate: [200, 100, 200]
+      data: payload.data || {}
     });
   });
-} catch (e) {
-  console.log("FCM SW error", e);
-}
+} catch (error) {}
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  event.waitUntil(clients.openWindow("./admin.html"));
+  event.waitUntil(clients.openWindow("./login.html"));
 });

@@ -5,7 +5,6 @@ import {
   updateDoc, serverTimestamp, query, where, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import { firebaseConfig, ROLES_COLLECTION, TASKS_COLLECTION } from "./firebase-config.js";
-import { initNotifications, showLocalNotification } from "./notifications.js";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -31,7 +30,13 @@ onAuthStateChanged(auth, async (user) => {
   setupEmployeeRealtimeNotifications();
 
   const notifBtn = document.getElementById("enableNotificationsBtn");
-  if (notifBtn) notifBtn.onclick = () => initNotifications(app, db, user, "employe");
+  if (notifBtn) notifBtn.onclick = async () => {
+    if (window.didierEloOneSignalSubscribe) {
+      await window.didierEloOneSignalSubscribe();
+    } else {
+      alert("OneSignal n’est pas encore configuré. Ajoute ton APP ID dans onesignal-init.js.");
+    }
+  };
 });
 
 $("logoutBtn").onclick = async () => {
@@ -148,7 +153,7 @@ function setupEmployeeRealtimeNotifications() {
       snap.docChanges().forEach((change) => {
         if (change.type === "added") {
           const t = change.doc.data();
-          showLocalNotification(
+          safeLocalNotify(
             "Nouveau travail assigné",
             `${t.service || "Service"} - ${t.address || "Adresse"}`
           );
@@ -163,4 +168,13 @@ function setupEmployeeRealtimeNotifications() {
   } catch (error) {
     console.error("Realtime employee notification error:", error);
   }
+}
+
+
+async function safeLocalNotify(title, body) {
+  try {
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification(title, { body, icon: "logo.jpeg" });
+    }
+  } catch (e) {}
 }
