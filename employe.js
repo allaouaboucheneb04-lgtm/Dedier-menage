@@ -2,7 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/fireba
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import {
   getFirestore, doc, getDoc, collection, getDocs,
-  updateDoc, serverTimestamp, query, where
+  updateDoc, serverTimestamp, query, where, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import { firebaseConfig, ROLES_COLLECTION, TASKS_COLLECTION } from "./firebase-config.js";
 
@@ -18,6 +18,22 @@ onAuthStateChanged(auth, async (user) => {
   if (!user) return window.location.href = "login.html";
 
   currentUser = user;
+  const notifBtn = document.getElementById("enableNotificationsBtn");
+  if (notifBtn) {
+    notifBtn.onclick = async () => {
+      try {
+        notifBtn.disabled = true;
+        notifBtn.textContent = "Activation...";
+        const mod = await import("./notifications.js");
+        await mod.initNotifications(app, db, user, "employe");
+      } catch (error) {
+        alert("Erreur notifications: " + (error.message || error));
+      } finally {
+        notifBtn.disabled = false;
+        notifBtn.textContent = "🔔 Notifications";
+      }
+    };
+  }
   $("employeeEmail").textContent = user.email || user.uid;
 
   const roleSnap = await getDoc(doc(db, ROLES_COLLECTION, user.uid));
@@ -27,6 +43,18 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   await loadTasks();
+  setupEmployeeRealtimeNotifications();
+
+  const notifBtn = document.getElementById("enableNotificationsBtn");
+  if (notifBtn) notifBtn.onclick = async () => {
+        try {
+          const mod = await import("./notifications.js");
+          await mod.initNotifications(app, db, user, "employe");
+        } catch (error) {
+          console.error("Notifications module error:", error);
+          alert("Erreur notifications, mais espace employé fonctionne.");
+        }
+      };
 });
 
 $("logoutBtn").onclick = async () => {
@@ -122,4 +150,50 @@ function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (m) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
   }[m]));
+}
+
+
+let firstEmployeeSnapshot = true;
+
+function setupEmployeeRealtimeNotifications() {
+  try {
+    const q = query(
+      collection(db, TASKS_COLLECTION),
+      where("employeeId", "==", currentUser.uid)
+    );
+
+    onSnapshot(q, (snap) => {
+      if (firstEmployeeSnapshot) {
+        firstEmployeeSnapshot = false;
+        return;
+      }
+
+      snap.docChanges().forEach((change) => {
+        if (change.type === "added") {
+          const t = change.doc.data();
+          safeNotify(
+            "Nouveau travail assigné",
+            `${t.service || "Service"} - ${t.address || "Adresse"}`
+          );
+          loadTasks();
+        }
+
+        if (change.type === "modified") {
+          loadTasks();
+        }
+      });
+    });
+  } catch (error) {
+    console.error("Realtime employee notification error:", error);
+  }
+}
+
+
+async function safeNotify(title, body) {
+  try {
+    const mod = await import("./notifications.js");
+    mod.safeNotify(title, body);
+  } catch (error) {
+    console.warn("Notification skipped:", error);
+  }
 }
