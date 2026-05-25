@@ -3,47 +3,28 @@ import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs
 import { VAPID_KEY } from "./firebase-config.js";
 
 function setStatus(message, ok = true) {
-  const el = document.getElementById("notificationStatus");
+  const el = document.getElementById("notificationStatus") || document.getElementById("adminDebugBox");
   if (el) {
     el.textContent = message;
     el.style.color = ok ? "#078b45" : "#d21f3c";
   }
-  console.log("[Didier.Elo Notifications]", message);
+  console.log("[Notifications]", message);
 }
 
 export async function initNotifications(app, db, user, role) {
   try {
-    if (!user) return setStatus("Tu dois être connecté.", false);
+    if (!user) return setStatus("Utilisateur non connecté.", false);
+    if (!("Notification" in window)) return setStatus("Notifications non supportées.", false);
 
-    if (!("Notification" in window)) {
-      return setStatus("Notifications non supportées sur ce navigateur.", false);
-    }
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") return setStatus("Notifications refusées.", false);
 
-    let permission = Notification.permission;
-    if (permission !== "granted") {
-      permission = await Notification.requestPermission();
-    }
-    if (permission !== "granted") {
-      return setStatus("Notifications refusées dans les réglages.", false);
-    }
-
-    if (!("serviceWorker" in navigator)) {
-      return setStatus("Service Worker non supporté.", false);
-    }
+    if (!("serviceWorker" in navigator)) return setStatus("Service Worker non supporté.", false);
 
     const supported = await isSupported().catch(() => false);
-    if (!supported) {
-      return setStatus("FCM non supporté ici. Teste sur Chrome/Android ou utilise OneSignal pour iPhone fermé.", false);
-    }
+    if (!supported) return setStatus("FCM non supporté sur ce navigateur.", false);
 
-    // Vérifie que le fichier service worker existe vraiment avant l’enregistrement.
-    const swUrl = new URL("./firebase-messaging-sw.js", location.href).href;
-    const swCheck = await fetch(swUrl, { cache: "reload" }).catch(() => null);
-    if (!swCheck || !swCheck.ok) {
-      return setStatus("firebase-messaging-sw.js introuvable à la racine du site.", false);
-    }
-
-    const registration = await navigator.serviceWorker.register(swUrl, { scope: "./" });
+    const registration = await navigator.serviceWorker.register("./firebase-messaging-sw.js", { scope: "./" });
     await navigator.serviceWorker.ready;
 
     const messaging = getMessaging(app);
@@ -52,9 +33,7 @@ export async function initNotifications(app, db, user, role) {
       serviceWorkerRegistration: registration
     });
 
-    if (!token) {
-      return setStatus("Aucun token reçu de Firebase.", false);
-    }
+    if (!token) return setStatus("Aucun token reçu.", false);
 
     await setDoc(doc(db, "notification_tokens", user.uid), {
       uid: user.uid,
@@ -63,23 +42,19 @@ export async function initNotifications(app, db, user, role) {
       token,
       updatedAt: serverTimestamp(),
       standalone: window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches,
-      permission: Notification.permission,
-      userAgent: navigator.userAgent
+      userAgent: navigator.userAgent,
+      permission: Notification.permission
     }, { merge: true });
 
-    setStatus("✅ Token enregistré dans notification_tokens.");
+    setStatus("✅ Notifications activées et token enregistré.");
     showLocalNotification("Didier.Elo", "Notifications activées.");
 
     onMessage(messaging, (payload) => {
-      showLocalNotification(
-        payload.notification?.title || "Didier.Elo",
-        payload.notification?.body || "Nouvelle notification"
-      );
+      showLocalNotification(payload.notification?.title || "Didier.Elo", payload.notification?.body || "Nouvelle notification");
     });
-
   } catch (error) {
     console.error(error);
-    setStatus("Erreur notifications : " + (error.code || error.message || error), false);
+    setStatus("Erreur notifications: " + (error.code || error.message || error), false);
   }
 }
 
@@ -88,5 +63,5 @@ export function showLocalNotification(title, body) {
     if ("Notification" in window && Notification.permission === "granted") {
       new Notification(title, { body, icon: "logo.jpeg", badge: "logo.jpeg" });
     }
-  } catch (e) {}
+  } catch(e) {}
 }
