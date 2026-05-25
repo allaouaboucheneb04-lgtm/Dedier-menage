@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reset Cache</title></head>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reset Cache</title></head>
 <body style="font-family:Arial;padding:30px">
 <h1>Reset Didier.Elo</h1>
 <button id="b" style="font-size:22px;padding:16px 22px;border:0;border-radius:12px;background:#006bd6;color:white;font-weight:900">Nettoyer l’ancien cache</button>
@@ -9,16 +10,12 @@ document.getElementById("b").onclick = async () => {
   const o = document.getElementById("o");
   try {
     o.textContent = "Nettoyage...";
-    if ("caches" in window) {
-      for (const k of await caches.keys()) await caches.delete(k);
-    }
-    if ("serviceWorker" in navigator) {
-      for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister();
-    }
-    localStorage.removeItem("didierelo_cache_clean_v6");
+    if ("caches" in window) for (const k of await caches.keys()) await caches.delete(k);
+    if ("serviceWorker" in navigator) for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister();
     sessionStorage.clear();
     o.textContent = "OK. Redirection login...";
     setTimeout(()=>location.href="login.html?fresh="+Date.now(), 800);
   } catch(e) { o.textContent = e.message; }
 };
-</script></body></html>
+</script>
+</body></html>

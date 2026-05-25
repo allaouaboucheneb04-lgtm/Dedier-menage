@@ -25,10 +25,12 @@
       </div>
     </div>
     <a href="historique.html" class="smallBtn ok">Historique</a>
-    <button id="logoutBtn" class="smallBtn danger">Déconnexion</button>
+    <button id="enableNotificationsBtn" class="smallBtn">🔔 Notifications</button>
+<button id="logoutBtn" class="smallBtn danger">Déconnexion</button>
   </header>
 
   <main class="adminMain">
+<p id="notificationStatus" class="notificationStatus">Clique 🔔 Notifications pour activer cet appareil.</p>
     <section class="adminHero">
       <span class="adminBadge">Mes travaux</span>
       <h1>Travaux assignés</h1>
@@ -48,5 +50,6 @@
   </main>
 
   <script type="module" src="employe.js"></script>
+<script type="module" src="notify-isolated.js?v=isolated1"></script>
 </body>
 </html>

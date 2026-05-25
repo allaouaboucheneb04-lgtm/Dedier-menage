@@ -1,0 +1,1 @@
+Cette version garde l’admin stable et ajoute les notifications dans notify-isolated.js séparé. Si les notifications bug, admin.js continue de fonctionner.
