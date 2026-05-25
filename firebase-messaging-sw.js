@@ -11,12 +11,7 @@ firebase.initializeApp({
 });
 
 self.addEventListener("install", () => self.skipWaiting());
-self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
-});
-
-// IMPORTANT: pas de fetch/cache ici.
-// Comme ça, admin.html/admin.js reviennent toujours du serveur et ne restent pas bloqués.
+self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
 
 try {
   const messaging = firebase.messaging();
@@ -30,7 +25,6 @@ try {
       data: payload.data || {},
       vibrate: [200, 100, 200]
     };
-
     self.registration.showNotification(title, options);
   });
 } catch (error) {

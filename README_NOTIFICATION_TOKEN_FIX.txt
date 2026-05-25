@@ -1,0 +1,1 @@
+Correction token notification: le bouton Notifications force maintenant la création du token FCM dans notification_tokens et affiche une erreur claire si Firestore/FCM refuse.
