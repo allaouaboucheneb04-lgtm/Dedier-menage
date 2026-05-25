@@ -59,6 +59,11 @@ service cloud.firestore {
         );
     }
 
+    match /notification_tokens/{uid} {
+      allow read, write: if signedIn() && request.auth.uid == uid;
+      allow read, delete: if isAdmin();
+    }
+
     match /taches/{id} {
       allow read: if isAdmin()
         || (isEmploye() && resource.data.employeeId == request.auth.uid);

@@ -10,3 +10,8 @@ export const firebaseConfig = {
 export const ROLES_COLLECTION = "users";
 export const QUOTES_COLLECTION = "demandes_soumission";
 export const TASKS_COLLECTION = "taches";
+
+
+// IMPORTANT: Remplace par ta clé VAPID Firebase Cloud Messaging.
+// Firebase Console > Project settings > Cloud Messaging > Web Push certificates > Generate key pair
+export const VAPID_KEY = "REMPLACE_PAR_TA_CLE_VAPID";

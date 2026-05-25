@@ -2,9 +2,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/fireba
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import {
   getFirestore, doc, getDoc, setDoc, collection, getDocs,
-  addDoc, updateDoc, serverTimestamp, query, orderBy
+  addDoc, updateDoc, serverTimestamp, query, orderBy, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import { firebaseConfig, ROLES_COLLECTION, QUOTES_COLLECTION, TASKS_COLLECTION } from "./firebase-config.js";
+import { initNotifications, showLocalNotification } from "./notifications.js";
 const INVITES_COLLECTION = "invites";
 
 const app = initializeApp(firebaseConfig);
@@ -29,6 +30,10 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   await loadAll();
+  setupAdminRealtimeNotifications();
+
+  const notifBtn = document.getElementById("enableNotificationsBtn");
+  if (notifBtn) notifBtn.onclick = () => initNotifications(app, db, user, "admin");
 });
 
 $("logoutBtn").onclick = async () => {
@@ -275,4 +280,32 @@ function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (m) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
   }[m]));
+}
+
+
+let firstAdminSnapshot = true;
+
+function setupAdminRealtimeNotifications() {
+  try {
+    const q = query(collection(db, QUOTES_COLLECTION), orderBy("createdAt", "desc"));
+
+    onSnapshot(q, (snap) => {
+      if (firstAdminSnapshot) {
+        firstAdminSnapshot = false;
+        return;
+      }
+
+      snap.docChanges().forEach((change) => {
+        if (change.type === "added") {
+          const q = change.doc.data();
+          showLocalNotification(
+            "Nouvelle soumission Didier.Elo",
+            `${q.name || "Client"} - ${q.service || "Service"}`
+          );
+        }
+      });
+    });
+  } catch (error) {
+    console.error("Realtime admin notification error:", error);
+  }
 }
