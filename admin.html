@@ -16,7 +16,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
 </head>
 <body class="adminBody">
-  <header class="adminTop">
+  <header class="adminTop adminTopClean">
     <div class="adminBrand">
       <img src="logo.jpeg" alt="Didier.Elo">
       <div>
@@ -24,9 +24,12 @@
         <span id="adminEmail">Chargement...</span>
       </div>
     </div>
-    <a href="historique.html" class="smallBtn ok">Historique</a>
-    <button id="enableNotificationsBtn" class="smallBtn">🔔 Notifications</button>
-    <button id="logoutBtn" class="smallBtn danger">Déconnexion</button>
+
+    <div class="adminActionsClean">
+      <a href="historique.html" class="smallBtn ok">Historique</a>
+      <button id="enableNotificationsBtn" class="smallBtn">🔔 Notifications</button>
+      <button id="logoutBtn" class="smallBtn danger">Déconnexion</button>
+    </div>
   </header>
 
   <main class="adminMain">

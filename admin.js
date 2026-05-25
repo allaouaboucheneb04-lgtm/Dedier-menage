@@ -6,6 +6,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import { firebaseConfig, ROLES_COLLECTION, QUOTES_COLLECTION, TASKS_COLLECTION } from "./firebase-config.js";
 import { initNotifications, showLocalNotification } from "./notifications.js";
+
 const INVITES_COLLECTION = "invites";
 
 const app = initializeApp(firebaseConfig);
@@ -14,35 +15,55 @@ const db = getFirestore(app);
 
 let employees = [];
 let currentUser = null;
+let firstAdminSnapshot = true;
 
 const $ = (id) => document.getElementById(id);
 
 onAuthStateChanged(auth, async (user) => {
-  if (!user) return window.location.href = "login.html";
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
 
   currentUser = user;
   $("adminEmail").textContent = user.email || user.uid;
 
-  const roleSnap = await getDoc(doc(db, ROLES_COLLECTION, user.uid));
-  if (!roleSnap.exists() || roleSnap.data().role !== "admin") {
-    alert("Accès admin refusé.");
-    return window.location.href = "login.html";
+  try {
+    const roleSnap = await getDoc(doc(db, ROLES_COLLECTION, user.uid));
+
+    if (!roleSnap.exists() || roleSnap.data().role !== "admin") {
+      alert("Accès admin refusé. Vérifie le document users/" + user.uid);
+      window.location.href = "login.html";
+      return;
+    }
+
+    const logoutBtn = $("logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.onclick = async () => {
+        await signOut(auth);
+        window.location.href = "login.html";
+      };
+    }
+
+    const notifBtn = $("enableNotificationsBtn");
+    if (notifBtn) {
+      notifBtn.onclick = () => initNotifications(app, db, user, "admin");
+    }
+
+    const refreshQuotes = $("refreshQuotes");
+    if (refreshQuotes) refreshQuotes.onclick = loadQuotes;
+
+    const refreshTasks = $("refreshTasks");
+    if (refreshTasks) refreshTasks.onclick = loadTasks;
+
+    await loadAll();
+    setupAdminRealtimeNotifications();
+
+  } catch (error) {
+    console.error(error);
+    alert("Erreur admin. Vérifie les rules Firestore.");
   }
-
-  await loadAll();
-  setupAdminRealtimeNotifications();
-
-  const notifBtn = document.getElementById("enableNotificationsBtn");
-  if (notifBtn) notifBtn.onclick = () => initNotifications(app, db, user, "admin");
 });
-
-$("logoutBtn").onclick = async () => {
-  await signOut(auth);
-  window.location.href = "login.html";
-};
-
-$("refreshQuotes").onclick = loadQuotes;
-$("refreshTasks").onclick = loadTasks;
 
 async function loadAll() {
   await loadEmployees();
@@ -53,80 +74,90 @@ async function loadAll() {
 async function loadEmployees() {
   const snap = await getDocs(collection(db, ROLES_COLLECTION));
   employees = [];
+
   snap.forEach((d) => {
     const data = d.data();
-    if (data.role === "employe") employees.push({ id: d.id, ...data });
+    if (data.role === "employe") {
+      employees.push({ id: d.id, ...data });
+    }
   });
-  $("countEmployees").textContent = employees.length;
+
+  const countEmployees = $("countEmployees");
+  if (countEmployees) countEmployees.textContent = employees.length;
 }
 
-$("inviteForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const data = Object.fromEntries(new FormData(e.target).entries());
-  const code = crypto.randomUUID().slice(0, 8).toUpperCase();
-  const cleanEmail = data.email.trim().toLowerCase();
-  const link = `${location.origin}${location.pathname.replace("admin.html", "")}invite.html?code=${code}`;
+const inviteForm = $("inviteForm");
+if (inviteForm) {
+  inviteForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  try {
-    await setDoc(doc(db, INVITES_COLLECTION, code), {
-      code,
-      name: data.name.trim(),
-      email: cleanEmail,
-      role: "employe",
-      status: "pending",
-      createdAt: serverTimestamp(),
-      createdBy: currentUser.uid,
-      inviteLink: link
-    });
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    const code = crypto.randomUUID().slice(0, 8).toUpperCase();
+    const cleanEmail = data.email.trim().toLowerCase();
+    const baseUrl = location.href.replace("admin.html", "");
+    const link = `${baseUrl}invite.html?code=${code}`;
 
-    $("inviteStatus").textContent = "✅ Invitation créée.";
+    try {
+      await setDoc(doc(db, INVITES_COLLECTION, code), {
+        code,
+        name: data.name.trim(),
+        email: cleanEmail,
+        role: "employe",
+        status: "pending",
+        createdAt: serverTimestamp(),
+        createdBy: currentUser.uid,
+        inviteLink: link
+      });
+
+      const inviteStatus = $("inviteStatus");
+      if (inviteStatus) {
+        inviteStatus.textContent = "✅ Invitation créée. Copie le lien et envoie-le à l’employé.";
+        inviteStatus.style.color = "#078b45";
+      }
+
+      if ($("inviteResult")) $("inviteResult").hidden = false;
+      if ($("inviteLink")) $("inviteLink").value = link;
+
+      e.target.reset();
+    } catch (error) {
+      console.error(error);
+      const inviteStatus = $("inviteStatus");
+      if (inviteStatus) {
+        inviteStatus.textContent = "❌ Erreur création invitation.";
+        inviteStatus.style.color = "#d21f3c";
+      }
+    }
+  });
+}
+
+const copyInvite = $("copyInvite");
+if (copyInvite) {
+  copyInvite.addEventListener("click", async () => {
+    await navigator.clipboard.writeText($("inviteLink").value);
+    $("inviteStatus").textContent = "✅ Lien copié.";
     $("inviteStatus").style.color = "#078b45";
-
-    $("inviteResult").hidden = false;
-    $("inviteLink").value = link;
-
-    const subject = encodeURIComponent("Invitation Didier.Elo Multi Service Inc");
-    const body = encodeURIComponent(
-`Bonjour ${data.name},
-
-Vous avez été invité à rejoindre l’espace employé Didier.Elo Multi Service Inc.
-
-Cliquez ici pour créer votre accès :
-${link}
-
-Merci.`
-    );
-
-    $("emailInvite").href = `mailto:${cleanEmail}?subject=${subject}&body=${body}`;
-
-    e.target.reset();
-  } catch (error) {
-    console.error(error);
-    $("inviteStatus").textContent = "❌ Erreur création invitation.";
-    $("inviteStatus").style.color = "#d21f3c";
-  }
-});
-
-$("copyInvite").addEventListener("click", async () => {
-  await navigator.clipboard.writeText($("inviteLink").value);
-  $("inviteStatus").textContent = "✅ Lien copié.";
-  $("inviteStatus").style.color = "#078b45";
-});
+  });
+}
 
 async function loadQuotes() {
   const list = $("quotesList");
-  list.innerHTML = "<p>Chargement...</p>";
+  if (!list) return;
+
+  list.innerHTML = "<p>Chargement des soumissions...</p>";
 
   let snap;
   try {
     snap = await getDocs(query(collection(db, QUOTES_COLLECTION), orderBy("createdAt", "desc")));
-  } catch (e) {
+  } catch (error) {
+    console.warn("OrderBy failed, fallback simple getDocs", error);
     snap = await getDocs(collection(db, QUOTES_COLLECTION));
   }
 
   const docs = [];
   snap.forEach((d) => docs.push({ id: d.id, ...d.data() }));
-  $("countQuotes").textContent = docs.length;
+
+  const countQuotes = $("countQuotes");
+  if (countQuotes) countQuotes.textContent = docs.length;
 
   if (!docs.length) {
     list.innerHTML = "<p>Aucune soumission pour le moment.</p>";
@@ -141,9 +172,13 @@ async function loadQuotes() {
       const select = document.querySelector(`[data-employee-select="${quoteId}"]`);
       const emp = employees.find(e => e.id === select.value);
 
-      if (!emp) return alert("Choisis un employé.");
+      if (!emp) {
+        alert("Choisis un employé.");
+        return;
+      }
 
       const q = docs.find(x => x.id === quoteId);
+
       await addDoc(collection(db, TASKS_COLLECTION), {
         quoteId,
         clientName: q.name || "",
@@ -176,6 +211,7 @@ async function loadQuotes() {
 
 function quoteCard(q) {
   const options = employees.map(e => `<option value="${e.id}">${escapeHtml(e.name || e.email)}</option>`).join("");
+
   return `
     <article class="adminCard">
       <div class="cardTop">
@@ -183,7 +219,7 @@ function quoteCard(q) {
         <span class="status">${escapeHtml(q.status || "nouveau")}</span>
       </div>
       <p><b>Service:</b> ${escapeHtml(q.service || "-")}</p>
-      <p><b>Téléphone:</b> <a href="tel:${escapeHtml(q.phone || "")}">${escapeHtml(q.phone || "-")}</a></p>
+      <p><b>Téléphone:</b> ${phoneLink(q.phone)}</p>
       <p><b>Email:</b> ${escapeHtml(q.email || "-")}</p>
       <p><b>Adresse:</b> ${mapLink(q.address)}</p>
       <p><b>Date:</b> ${escapeHtml(q.date || "-")}</p>
@@ -201,12 +237,14 @@ function quoteCard(q) {
 
 async function loadTasks() {
   const list = $("tasksList");
-  list.innerHTML = "<p>Chargement...</p>";
+  if (!list) return;
+
+  list.innerHTML = "<p>Chargement des travaux...</p>";
 
   let snap;
   try {
     snap = await getDocs(query(collection(db, TASKS_COLLECTION), orderBy("createdAt", "desc")));
-  } catch (e) {
+  } catch (error) {
     snap = await getDocs(collection(db, TASKS_COLLECTION));
   }
 
@@ -217,10 +255,12 @@ async function loadTasks() {
       docs.push({ id: d.id, ...data });
     }
   });
-  $("countTasks").textContent = docs.length;
+
+  const countTasks = $("countTasks");
+  if (countTasks) countTasks.textContent = docs.length;
 
   if (!docs.length) {
-    list.innerHTML = "<p>Aucun travail assigné.</p>";
+    list.innerHTML = "<p>Aucun travail actif.</p>";
     return;
   }
 
@@ -263,28 +303,6 @@ function taskCard(t) {
   `;
 }
 
-
-function phoneLink(phone) {
-  if (!phone) return "-";
-  const clean = String(phone).replace(/[^\d+]/g, "");
-  return `<a href="tel:${clean}">${escapeHtml(phone)}</a>`;
-}
-
-function mapLink(address) {
-  if (!address) return "-";
-  const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-  return `<a href="${url}" target="_blank" rel="noopener">${escapeHtml(address)}</a>`;
-}
-
-function escapeHtml(value) {
-  return String(value ?? "").replace(/[&<>"']/g, (m) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
-  }[m]));
-}
-
-
-let firstAdminSnapshot = true;
-
 function setupAdminRealtimeNotifications() {
   try {
     const q = query(collection(db, QUOTES_COLLECTION), orderBy("createdAt", "desc"));
@@ -302,10 +320,33 @@ function setupAdminRealtimeNotifications() {
             "Nouvelle soumission Didier.Elo",
             `${q.name || "Client"} - ${q.service || "Service"}`
           );
+          loadQuotes();
         }
       });
     });
   } catch (error) {
     console.error("Realtime admin notification error:", error);
   }
+}
+
+function phoneLink(phone) {
+  if (!phone) return "-";
+  const clean = String(phone).replace(/[^\d+]/g, "");
+  return `<a href="tel:${clean}">${escapeHtml(phone)}</a>`;
+}
+
+function mapLink(address) {
+  if (!address) return "-";
+  const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+  return `<a href="${url}" target="_blank" rel="noopener">${escapeHtml(address)}</a>`;
+}
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (m) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  }[m]));
 }

@@ -1,0 +1,1 @@
+Correction: admin.js réécrit proprement. Déconnexion fonctionne, soumissions s'affichent, header mobile corrigé.

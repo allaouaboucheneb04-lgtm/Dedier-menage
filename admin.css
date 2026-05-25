@@ -168,3 +168,75 @@ body.adminBody{background:#eef6ff;color:#071f3d;padding-bottom:0}.adminTop{posit
     font-size:.8rem;
   }
 }
+
+
+/* FINAL ADMIN HEADER FIX */
+.adminTopClean{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  overflow:visible;
+}
+
+.adminActionsClean{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:10px;
+  flex-wrap:nowrap;
+}
+
+.adminActionsClean .smallBtn{
+  min-height:48px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+}
+
+@media(max-width:850px){
+  .adminTopClean{
+    padding:10px 12px;
+  }
+
+  .adminTopClean .adminBrand{
+    flex:0 0 auto;
+    max-width:105px;
+  }
+
+  .adminTopClean .adminBrand div{
+    display:none;
+  }
+
+  .adminTopClean .adminBrand img{
+    width:52px !important;
+    height:52px !important;
+    border-radius:16px;
+  }
+
+  .adminActionsClean{
+    flex:1;
+    justify-content:flex-end;
+    gap:7px;
+    overflow:visible;
+  }
+
+  .adminActionsClean .smallBtn{
+    padding:10px 11px;
+    border-radius:14px;
+    font-size:.78rem;
+    white-space:nowrap;
+  }
+
+  .adminHero{
+    margin-top:18px;
+  }
+}
+
+@media(max-width:390px){
+  .adminActionsClean .smallBtn{
+    font-size:.72rem;
+    padding:9px 8px;
+  }
+}
