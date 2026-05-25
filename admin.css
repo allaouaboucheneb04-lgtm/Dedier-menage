@@ -40,3 +40,15 @@ body.adminBody{background:#eef6ff;color:#071f3d;padding-bottom:0}.adminTop{posit
   color:#006bd6;
   margin:20px 5%;
 }
+
+.installHint{
+  max-width:900px;
+  margin:18px auto;
+  background:#e8f6ff;
+  color:#006bd6;
+  border:1px solid #c9eaff;
+  padding:14px 18px;
+  border-radius:18px;
+  text-align:center;
+  font-weight:900;
+}

@@ -1,4 +1,4 @@
-import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-messaging.js";
+import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-messaging.js";
 import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import { VAPID_KEY } from "./firebase-config.js";
 
@@ -6,7 +6,7 @@ export async function initNotifications(app, db, user, role) {
   const statusEl = document.getElementById("notificationStatus");
 
   if (!("Notification" in window)) {
-    if (statusEl) statusEl.textContent = "Notifications non supportées sur ce navigateur.";
+    if (statusEl) statusEl.textContent = "Ce navigateur ne supporte pas les notifications.";
     return;
   }
 
@@ -14,25 +14,40 @@ export async function initNotifications(app, db, user, role) {
     const permission = await Notification.requestPermission();
 
     if (permission !== "granted") {
-      if (statusEl) statusEl.textContent = "Notifications refusées.";
+      if (statusEl) statusEl.textContent = "Notifications refusées. Va dans les réglages du navigateur pour autoriser.";
       return;
     }
 
     if ("serviceWorker" in navigator) {
       await navigator.serviceWorker.register("./firebase-messaging-sw.js");
+      await navigator.serviceWorker.ready;
+    }
+
+    // Fonctionne tout de suite quand admin.html/employe.html est ouvert
+    showLocalNotification("Notifications activées", "Vous recevrez les alertes pendant que l’espace est ouvert.");
+
+    const supported = await isSupported().catch(() => false);
+
+    if (!supported) {
+      if (statusEl) {
+        statusEl.textContent = "Notifications locales activées. Push FCM non supporté sur ce navigateur.";
+      }
+      return;
     }
 
     if (!VAPID_KEY || VAPID_KEY.includes("REMPLACE")) {
       if (statusEl) {
-        statusEl.textContent = "Notifications locales activées. Pour les push fermées, ajoute la clé VAPID.";
+        statusEl.textContent = "Notifications locales activées. Pour recevoir même site fermé, ajoute la clé VAPID Firebase.";
       }
       return;
     }
 
     const messaging = getMessaging(app);
+    const registration = await navigator.serviceWorker.ready;
+
     const token = await getToken(messaging, {
       vapidKey: VAPID_KEY,
-      serviceWorkerRegistration: await navigator.serviceWorker.ready
+      serviceWorkerRegistration: registration
     });
 
     if (token) {
@@ -41,6 +56,8 @@ export async function initNotifications(app, db, user, role) {
         email: user.email || "",
         role,
         token,
+        userAgent: navigator.userAgent,
+        standalone: window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches,
         updatedAt: serverTimestamp()
       }, { merge: true });
 
@@ -56,19 +73,22 @@ export async function initNotifications(app, db, user, role) {
 
   } catch (error) {
     console.error("Notification error:", error);
-    if (statusEl) statusEl.textContent = "Erreur notifications. Vérifie FCM/VAPID.";
+    if (statusEl) statusEl.textContent = "Erreur notifications. Vérifie HTTPS, VAPID et permissions.";
   }
 }
 
 export function showLocalNotification(title, body) {
   try {
-    if (Notification.permission === "granted") {
+    if ("Notification" in window && Notification.permission === "granted") {
       new Notification(title, {
         body,
-        icon: "logo.jpeg"
+        icon: "logo.jpeg",
+        badge: "logo.jpeg"
       });
     }
-  } catch (e) {}
+  } catch (e) {
+    console.warn("Local notification failed", e);
+  }
 
   playBeep();
 }
