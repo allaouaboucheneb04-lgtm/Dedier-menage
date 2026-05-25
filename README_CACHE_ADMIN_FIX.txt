@@ -1,0 +1,1 @@
+Correction affichage après suppression cache: désactivation cache service worker, cache-busting CSS/JS, reset-cache.html renforcé, message admin visible si aucune soumission ou erreur Firestore.

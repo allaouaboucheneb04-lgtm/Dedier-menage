@@ -176,7 +176,8 @@ async function loadQuotes() {
     if ($("countQuotes")) $("countQuotes").textContent = docs.length;
 
     if (!docs.length) {
-      list.innerHTML = "<p>Aucune soumission pour le moment.</p>";
+      list.innerHTML = "<p>Aucune soumission pour le moment. Fais un test depuis le formulaire client.</p>";
+      showAdminDebug("Admin connecté. Aucune soumission trouvée dans Firestore.", false);
       return;
     }
 
@@ -226,6 +227,7 @@ async function loadQuotes() {
   } catch (error) {
     console.error("loadQuotes", error);
     list.innerHTML = `<p style="color:#d21f3c;font-weight:900;">Erreur chargement soumissions. Vérifie Firestore Rules.</p>`;
+    showAdminDebug("Erreur Firestore: impossible de lire demandes_soumission.", true);
   }
 }
 
@@ -366,4 +368,19 @@ function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (m) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
   }[m]));
+}
+
+
+function showAdminDebug(message, isError = false) {
+  let box = document.getElementById("adminDebugBox");
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "adminDebugBox";
+    box.style.cssText = "margin:14px 5%;padding:14px;border-radius:16px;font-weight:900;text-align:center;";
+    const main = document.querySelector(".adminMain");
+    if (main) main.prepend(box);
+  }
+  box.style.background = isError ? "#ffe8e8" : "#e8f6ff";
+  box.style.color = isError ? "#d21f3c" : "#006bd6";
+  box.textContent = message;
 }

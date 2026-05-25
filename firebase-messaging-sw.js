@@ -15,15 +15,19 @@ self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim(
 
 try {
   const messaging = firebase.messaging();
+
   messaging.onBackgroundMessage((payload) => {
     self.registration.showNotification(payload.notification?.title || "Didier.Elo", {
       body: payload.notification?.body || "Nouvelle notification",
       icon: "./logo.jpeg",
       badge: "./logo.jpeg",
-      data: payload.data || {}
+      data: payload.data || {},
+      vibrate: [200, 100, 200]
     });
   });
-} catch (error) {}
+} catch (error) {
+  console.log("FCM background unavailable", error);
+}
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
