@@ -10,40 +10,38 @@ export async function initNotifications(app, db, user, role) {
     return;
   }
 
-  try {
-    const permission = await Notification.requestPermission();
+  const permission = await Notification.requestPermission();
 
-    if (permission !== "granted") {
-      if (statusEl) statusEl.textContent = "Notifications refusées. Va dans les réglages du navigateur pour autoriser.";
+  if (permission !== "granted") {
+    if (statusEl) statusEl.textContent = "Notifications refusées.";
+    return;
+  }
+
+  // Toujours activer une notification locale pour confirmer.
+  showLocalNotification("Notifications activées", "Les alertes Didier.Elo sont activées.");
+
+  // Si la clé VAPID est absente, ne pas casser le site.
+  if (!VAPID_KEY || VAPID_KEY.includes("REMPLACE")) {
+    if (statusEl) statusEl.textContent = "✅ Notifications locales activées. Clé VAPID manquante.";
+    return;
+  }
+
+  try {
+    if (!("serviceWorker" in navigator)) {
+      if (statusEl) statusEl.textContent = "✅ Notifications locales activées. Service Worker non supporté.";
       return;
     }
-
-    if ("serviceWorker" in navigator) {
-      await navigator.serviceWorker.register("./firebase-messaging-sw.js");
-      await navigator.serviceWorker.ready;
-    }
-
-    // Fonctionne tout de suite quand admin.html/employe.html est ouvert
-    showLocalNotification("Notifications activées", "Vous recevrez les alertes pendant que l’espace est ouvert.");
 
     const supported = await isSupported().catch(() => false);
-
     if (!supported) {
-      if (statusEl) {
-        statusEl.textContent = "Notifications locales activées. Push FCM non supporté sur ce navigateur.";
-      }
+      if (statusEl) statusEl.textContent = "✅ Notifications locales activées. FCM non supporté ici.";
       return;
     }
 
-    if (!VAPID_KEY || VAPID_KEY.includes("REMPLACE")) {
-      if (statusEl) {
-        statusEl.textContent = "Notifications locales activées. Pour recevoir même site fermé, ajoute la clé VAPID Firebase.";
-      }
-      return;
-    }
+    const registration = await navigator.serviceWorker.register("./firebase-messaging-sw.js");
+    await navigator.serviceWorker.ready;
 
     const messaging = getMessaging(app);
-    const registration = await navigator.serviceWorker.ready;
 
     const token = await getToken(messaging, {
       vapidKey: VAPID_KEY,
@@ -62,6 +60,8 @@ export async function initNotifications(app, db, user, role) {
       }, { merge: true });
 
       if (statusEl) statusEl.textContent = "✅ Notifications push activées.";
+    } else {
+      if (statusEl) statusEl.textContent = "✅ Notifications locales activées. Aucun token push reçu.";
     }
 
     onMessage(messaging, (payload) => {
@@ -72,8 +72,10 @@ export async function initNotifications(app, db, user, role) {
     });
 
   } catch (error) {
-    console.error("Notification error:", error);
-    if (statusEl) statusEl.textContent = "Erreur notifications. Vérifie HTTPS, VAPID et permissions.";
+    console.error("Erreur FCM push, fallback local:", error);
+    if (statusEl) {
+      statusEl.textContent = "✅ Notifications locales activées. Push FCM à vérifier.";
+    }
   }
 }
 
@@ -86,9 +88,7 @@ export function showLocalNotification(title, body) {
         badge: "logo.jpeg"
       });
     }
-  } catch (e) {
-    console.warn("Local notification failed", e);
-  }
+  } catch (e) {}
 
   playBeep();
 }

@@ -1,0 +1,1 @@
+Version corrigée avec clé VAPID conservée. FCM ne bloque plus admin.js: si push échoue, fallback notifications locales. Service worker v4 network-first pour éviter cache brisé.
