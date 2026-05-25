@@ -218,10 +218,16 @@ async function loadTasks() {
 
   list.querySelectorAll("[data-status]").forEach((btn) => {
     btn.addEventListener("click", async () => {
-      await updateDoc(doc(db, TASKS_COLLECTION, btn.dataset.task), {
+      const updateData = {
         status: btn.dataset.status,
         updatedAt: serverTimestamp()
-      });
+      };
+
+      if (btn.dataset.status === "terminé") {
+        updateData.completedAt = serverTimestamp();
+      }
+
+      await updateDoc(doc(db, TASKS_COLLECTION, btn.dataset.task), updateData);
       await loadTasks();
     });
   });

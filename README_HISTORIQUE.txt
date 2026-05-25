@@ -1,0 +1,1 @@
+Ajout de historique.html. Quand un travail est marqué Terminé, il apparaît automatiquement dans l'historique. Admin voit tout, employé voit seulement ses travaux terminés.

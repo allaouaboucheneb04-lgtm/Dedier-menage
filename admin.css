@@ -2,3 +2,12 @@ body.adminBody{background:#eef6ff;color:#071f3d;padding-bottom:0}.adminTop{posit
 .inviteResult{margin-top:18px;background:#f8fcff;border:1px solid #d9ecff;border-radius:22px;padding:18px}
 .inviteResult b{display:block;margin-bottom:10px}
 .inviteResult input{width:100%;border:1px solid #d3e4f5;background:white;border-radius:16px;padding:14px;font:inherit;color:#071f3d}
+
+.topActions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.topActions a{display:inline-flex}
+.status.done{background:#dff9ea;color:#078b45}
+.historyCard{border-left:6px solid #078b45}
+@media(max-width:850px){
+  .topActions{display:grid;grid-template-columns:1fr;align-items:stretch}
+  .topActions .smallBtn{text-align:center}
+}

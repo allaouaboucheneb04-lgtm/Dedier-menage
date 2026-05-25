@@ -54,11 +54,17 @@ async function loadTasks() {
   list.querySelectorAll("[data-status]").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const note = document.querySelector(`[data-note="${btn.dataset.task}"]`)?.value || "";
-      await updateDoc(doc(db, TASKS_COLLECTION, btn.dataset.task), {
+      const updateData = {
         status: btn.dataset.status,
         notes: note,
         updatedAt: serverTimestamp()
-      });
+      };
+
+      if (btn.dataset.status === "terminé") {
+        updateData.completedAt = serverTimestamp();
+      }
+
+      await updateDoc(doc(db, TASKS_COLLECTION, btn.dataset.task), updateData);
       await loadTasks();
     });
   });
