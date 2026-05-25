@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Admin | Didier.Elo</title>
   <link rel="icon" href="logo.jpeg">
-  <link rel="stylesheet" href="style.css?v=datafix-1">
-  <link rel="stylesheet" href="admin.css?v=datafix-1">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="admin.css">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="logo.jpeg">
   <meta name="theme-color" content="#006bd6">
@@ -16,7 +16,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
 </head>
 <body class="adminBody">
-  <header class="adminTop adminTopClean">
+  <header class="adminTop">
     <div class="adminBrand">
       <img src="logo.jpeg" alt="Didier.Elo">
       <div>
@@ -24,12 +24,8 @@
         <span id="adminEmail">Chargement...</span>
       </div>
     </div>
-
-    <div class="adminActionsClean">
-      <a href="historique.html" class="smallBtn ok">Historique</a>
-      <button id="enableNotificationsBtn" class="smallBtn">🔔 Notifications</button>
-      <button id="logoutBtn" class="smallBtn danger">Déconnexion</button>
-    </div>
+    <a href="historique.html" class="smallBtn ok">Historique</a>
+    <button id="logoutBtn" class="smallBtn danger">Déconnexion</button>
   </header>
 
   <main class="adminMain">
@@ -109,15 +105,8 @@
       </div>
       <div id="tasksList" class="cardsList"></div>
     </section>
-  <p id="notificationStatus" class="notificationStatus"></p>
+  </main>
 
-<div class="installHint">
-  📲 Pour l’utiliser comme une app : Safari/Chrome → Partager → Ajouter à l’écran d’accueil.
-</div>
-
-</main>
-
-  <script type="module" src="admin.js?v=datafix-1"></script>
-<script src="pwa.js?v=datafix-1"></script>
+  <script type="module" src="admin.js"></script>
 </body>
 </html>

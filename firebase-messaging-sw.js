@@ -23,9 +23,4 @@ try {
       data: payload.data || {}
     });
   });
-} catch (error) {}
-
-self.addEventListener("notificationclick", (event) => {
-  event.notification.close();
-  event.waitUntil(clients.openWindow("./login.html"));
-});
+} catch(e) {}

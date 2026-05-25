@@ -1,0 +1,1 @@
+Version rollback stable: admin.js/admin.html repris de la version qui affichait les données. Service worker sans cache. Ouvrir reset-cache.html après déploiement.
