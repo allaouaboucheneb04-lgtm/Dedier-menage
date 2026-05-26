@@ -1,13 +1,7 @@
-// Didier.Elo - OneSignal Push Notifications
-// 1) Crée une app Web Push dans OneSignal
-// 2) Copie ton APP ID ici
-// 3) Mets le domaine exact de ton site dans OneSignal:
-//    https://allaouaboucheneb04-lgtm.github.io
-
-const DIDIER_ELO_ONESIGNAL_APP_ID = "6c4e8421-6a3f-48e1-948c-f7a5d07ed234";
+window.OneSignalDeferred = window.OneSignalDeferred || [];
 
 function setOneSignalStatus(message, ok = true) {
-  let el = document.getElementById("notificationStatus");
+  let el = document.getElementById("notificationStatus") || document.getElementById("adminDebugBox");
   if (!el) {
     el = document.createElement("p");
     el.id = "notificationStatus";
@@ -20,42 +14,36 @@ function setOneSignalStatus(message, ok = true) {
   console.log("[OneSignal]", message);
 }
 
-window.OneSignalDeferred = window.OneSignalDeferred || [];
-
-if (DIDIER_ELO_ONESIGNAL_APP_ID.includes("REMPLACE")) {
-  window.didierEloOneSignalSubscribe = async function () {
-    setOneSignalStatus("OneSignal pas configuré: ajoute ton APP ID dans onesignal-init.js", false);
-  };
-} else {
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: DIDIER_ELO_ONESIGNAL_APP_ID,
-      safari_web_id: "",
-      notifyButton: {
-        enable: false
-      },
-      allowLocalhostAsSecureOrigin: true
-    });
-
-    window.didierEloOneSignalSubscribe = async function () {
-      try {
-        setOneSignalStatus("Activation OneSignal...");
-        await OneSignal.Notifications.requestPermission();
-
-        if (OneSignal.User && OneSignal.User.PushSubscription) {
-          const id = OneSignal.User.PushSubscription.id;
-          if (id) {
-            setOneSignalStatus("✅ Notifications OneSignal activées.");
-          } else {
-            setOneSignalStatus("Autorisation donnée, abonnement en cours. Réessaie dans 10 secondes.", false);
-          }
-        } else {
-          setOneSignalStatus("Permission demandée. Vérifie l’état dans OneSignal.", true);
-        }
-      } catch (e) {
-        console.error(e);
-        setOneSignalStatus("Erreur OneSignal: " + (e.message || e), false);
-      }
-    };
+OneSignalDeferred.push(async function(OneSignal) {
+  await OneSignal.init({
+    appId: "6c4e8421-6a3f-48e1-948c-f7a5d07ed234",
+    notifyButton: { enable: false },
+    allowLocalhostAsSecureOrigin: true
   });
-}
+
+  window.didierEloOneSignalSubscribe = async function () {
+    try {
+      setOneSignalStatus("Activation des notifications...");
+      await OneSignal.Notifications.requestPermission();
+
+      if (!OneSignal.Notifications.permission) {
+        setOneSignalStatus("Notifications refusées dans les réglages iPhone.", false);
+        return;
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 2500));
+
+      const subId = OneSignal.User && OneSignal.User.PushSubscription ? OneSignal.User.PushSubscription.id : null;
+      const optedIn = OneSignal.User && OneSignal.User.PushSubscription ? OneSignal.User.PushSubscription.optedIn : false;
+
+      if (subId || optedIn) {
+        setOneSignalStatus("✅ Notifications activées avec OneSignal.");
+      } else {
+        setOneSignalStatus("Autorisation donnée. Ferme/r ouvre l’app puis clique encore 🔔.", false);
+      }
+    } catch (e) {
+      console.error(e);
+      setOneSignalStatus("Erreur OneSignal: " + (e.message || e), false);
+    }
+  };
+});

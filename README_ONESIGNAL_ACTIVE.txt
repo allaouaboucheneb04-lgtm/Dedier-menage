@@ -1,0 +1,1 @@
+Version stable + OneSignal actif. Déploie puis ouvre reset-cache.html avant de tester.
