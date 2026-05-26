@@ -1,0 +1,1 @@
+Version urgence: retour stable. Notifications désactivées temporairement pour supprimer le bug. Déploie, ouvre reset-cache.html, puis reconnecte-toi.

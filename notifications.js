@@ -1,10 +1,7 @@
 export async function initNotifications() {
-  alert("FCM désactivé. Utilise OneSignal.");
+  const el = document.getElementById("notificationStatus");
+  const msg = "Notifications temporairement désactivées pour remettre le site stable.";
+  if (el) el.textContent = msg;
+  alert(msg);
 }
-export function showLocalNotification(title, body) {
-  try {
-    if ("Notification" in window && Notification.permission === "granted") {
-      new Notification(title, { body, icon: "logo.jpeg" });
-    }
-  } catch (e) {}
-}
+export function showLocalNotification() {}
