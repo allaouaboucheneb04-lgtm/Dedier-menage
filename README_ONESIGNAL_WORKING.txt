@@ -1,0 +1,1 @@
+Version OneSignal corrigée: force PushSubscription.optIn() et affiche l'ID du subscriber.
