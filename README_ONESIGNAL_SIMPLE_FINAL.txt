@@ -1,0 +1,1 @@
+OneSignal configuré avec App ID 6c4e8421-6a3f-48e1-948c-f7a5d07ed234. Déploie, ouvre reset-cache.html, puis clique Notifications.

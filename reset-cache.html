@@ -13,7 +13,7 @@ document.getElementById("b").onclick = async () => {
     if ("caches" in window) for (const k of await caches.keys()) await caches.delete(k);
     if ("serviceWorker" in navigator) for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister();
     sessionStorage.clear();
-    o.textContent = "OK. Ferme l'app puis rouvre le site.";
+    o.textContent = "OK. Ferme l’app puis rouvre le site.";
     setTimeout(()=>location.href="login.html?fresh="+Date.now(),1000);
   } catch(e) { o.textContent = e.message; }
 };
