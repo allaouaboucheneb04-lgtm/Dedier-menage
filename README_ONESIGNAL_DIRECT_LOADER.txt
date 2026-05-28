@@ -1,0 +1,1 @@
+Correction: notifications.js charge OneSignal lui-même. Plus de message 'OneSignal charge encore'.

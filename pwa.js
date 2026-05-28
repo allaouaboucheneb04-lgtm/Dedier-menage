@@ -1,1 +1,1 @@
-console.log("OneSignal handles push service worker");
+console.log("OneSignal direct loader handles push");
