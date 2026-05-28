@@ -1,0 +1,1 @@
+Fix: OneSignalDeferred callback is registered BEFORE loading SDK. This resolves stuck 'Activation OneSignal...' state.
