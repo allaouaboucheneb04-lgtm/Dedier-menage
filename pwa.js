@@ -1,1 +1,1 @@
-console.log("OneSignal official snippet handles push notifications.");
+console.log("PWA OK. OneSignal handles push service worker.");

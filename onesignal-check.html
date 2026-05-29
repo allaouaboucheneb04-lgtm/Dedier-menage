@@ -7,17 +7,17 @@
 <script>
 (async () => {
   const out = document.getElementById("out");
-  const files = ["OneSignalSDKWorker.js", "OneSignalSDKUpdaterWorker.js", "onesignal-init.js"];
-  let txt = "URL: " + location.origin + location.pathname + "\n\n";
+  const files = ["OneSignalSDKWorker.js", "OneSignalSDKUpdaterWorker.js", "onesignal-init.js", "admin.html"];
+  let txt = "Origin: " + location.origin + "\n\n";
   for (const f of files) {
     try {
       const r = await fetch("/" + f + "?t=" + Date.now(), { cache: "no-store" });
-      txt += f + ": " + r.status + " " + (r.ok ? "OK" : "ERREUR") + "\n";
+      txt += "/" + f + " => " + r.status + " " + (r.ok ? "OK" : "ERREUR") + "\n";
     } catch (e) {
-      txt += f + ": ERREUR " + e.message + "\n";
+      txt += "/" + f + " => ERREUR " + e.message + "\n";
     }
   }
-  txt += "\nSi un fichier n'est pas 200 OK, il n'est pas à la racine du domaine.";
+  txt += "\nSi OneSignalSDKWorker.js n'est pas 200 OK, les notifications ne peuvent pas fonctionner.";
   out.textContent = txt;
 })();
 </script>
