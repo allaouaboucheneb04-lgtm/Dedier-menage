@@ -1,1 +1,1 @@
-console.log("OneSignal loaded on demand by notifications.js");\n
+console.log("OneSignal official snippet handles push notifications.");

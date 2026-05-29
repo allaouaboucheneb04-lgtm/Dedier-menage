@@ -1,6 +1,6 @@
 window.OneSignalDeferred = window.OneSignalDeferred || [];
 
-function didierStatus(message, ok = true) {
+function setDidierOneSignalStatus(message, ok = true) {
   let el = document.getElementById("notificationStatus") || document.getElementById("adminDebugBox");
   if (!el) {
     el = document.createElement("p");
@@ -11,68 +11,59 @@ function didierStatus(message, ok = true) {
   }
   el.textContent = message;
   el.style.color = ok ? "#078b45" : "#d21f3c";
-  console.log("[OneSignal Didier.Elo]", message);
-}
-
-async function unregisterFirebaseSW() {
-  try {
-    if (!("serviceWorker" in navigator)) return;
-    const regs = await navigator.serviceWorker.getRegistrations();
-    for (const reg of regs) {
-      const url = reg.active?.scriptURL || reg.installing?.scriptURL || reg.waiting?.scriptURL || "";
-      if (url.includes("firebase-messaging-sw.js")) await reg.unregister();
-    }
-  } catch(e) {}
+  console.log("[OneSignal]", message);
 }
 
 OneSignalDeferred.push(async function(OneSignal) {
   try {
-    await unregisterFirebaseSW();
-
     await OneSignal.init({
       appId: "6c4e8421-6a3f-48e1-948c-f7a5d07ed234",
-      notifyButton: { enable: false },
-      serviceWorkerPath: "OneSignalSDKWorker.js",
-      serviceWorkerParam: { scope: "/" }
+      notifyButton: { enable: false }
     });
+
+    window.didierEloOneSignalReady = true;
 
     window.didierEloOneSignalSubscribe = async function () {
       try {
-        didierStatus("Activation OneSignal...");
+        setDidierOneSignalStatus("Demande autorisation notifications...");
+
         await OneSignal.Notifications.requestPermission();
 
         if (!OneSignal.Notifications.permission) {
-          didierStatus("Permission refusée dans iPhone.", false);
+          setDidierOneSignalStatus("Notifications refusées dans les réglages iPhone.", false);
           return;
         }
 
+        setDidierOneSignalStatus("Création abonnement OneSignal...");
+
         try {
           await OneSignal.User.PushSubscription.optIn();
-        } catch(e) {
+        } catch (e) {
           console.warn("optIn warning", e);
         }
 
-        let subId = null;
+        let subId = "";
         let optedIn = false;
-        for (let i = 0; i < 10; i++) {
-          subId = OneSignal.User?.PushSubscription?.id;
-          optedIn = OneSignal.User?.PushSubscription?.optedIn;
+
+        for (let i = 0; i < 15; i++) {
+          subId = OneSignal.User?.PushSubscription?.id || "";
+          optedIn = OneSignal.User?.PushSubscription?.optedIn || false;
           if (subId || optedIn) break;
-          await new Promise(r => setTimeout(r, 1000));
+          await new Promise(resolve => setTimeout(resolve, 1000));
         }
 
         if (subId || optedIn) {
-          didierStatus("✅ Notifications activées. ID: " + (subId || "opted-in"));
+          setDidierOneSignalStatus("✅ Notifications activées avec OneSignal. " + (subId ? "ID: " + subId : ""));
         } else {
-          didierStatus("Permission OK mais OneSignal n'a pas créé le subscriber. Vérifie URL exacte et ouvre depuis l'écran d'accueil.", false);
+          setDidierOneSignalStatus("Permission OK, mais subscriber non créé. Vérifie OneSignal Site URL = https://www.didiereloservices.com", false);
         }
-      } catch(e) {
+      } catch (e) {
         console.error(e);
-        didierStatus("Erreur OneSignal: " + (e.message || e), false);
+        setDidierOneSignalStatus("Erreur OneSignal: " + (e.message || e), false);
       }
     };
-  } catch(e) {
+  } catch (e) {
     console.error(e);
-    didierStatus("Erreur init OneSignal: " + (e.message || e), false);
+    setDidierOneSignalStatus("Erreur init OneSignal: " + (e.message || e), false);
   }
 });

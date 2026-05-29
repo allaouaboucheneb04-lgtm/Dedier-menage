@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check OneSignal</title></head>
+<body style="font-family:Arial;padding:24px">
+<h1>Check OneSignal</h1>
+<pre id="out">Test...</pre>
+<script>
+(async () => {
+  const out = document.getElementById("out");
+  const files = ["OneSignalSDKWorker.js", "OneSignalSDKUpdaterWorker.js", "onesignal-init.js"];
+  let txt = "URL: " + location.origin + location.pathname + "\n\n";
+  for (const f of files) {
+    try {
+      const r = await fetch("/" + f + "?t=" + Date.now(), { cache: "no-store" });
+      txt += f + ": " + r.status + " " + (r.ok ? "OK" : "ERREUR") + "\n";
+    } catch (e) {
+      txt += f + ": ERREUR " + e.message + "\n";
+    }
+  }
+  txt += "\nSi un fichier n'est pas 200 OK, il n'est pas à la racine du domaine.";
+  out.textContent = txt;
+})();
+</script>
+</body></html>

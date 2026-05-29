@@ -1,0 +1,1 @@
+Version officielle OneSignal: SDK et init chargés par HTML. Page de test: /onesignal-check.html doit afficher 200 OK pour les fichiers.
