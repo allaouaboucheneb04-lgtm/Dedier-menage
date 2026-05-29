@@ -1,1 +1,1 @@
-console.log("PWA active. OneSignal push handled by push.js");
+console.log("PWA OK. OneSignal push handled by push.js");
