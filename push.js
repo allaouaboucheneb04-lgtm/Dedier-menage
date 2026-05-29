@@ -120,7 +120,7 @@ window.didierEloEnablePush = async function() {
       await new Promise(r => setTimeout(r, 500));
     }
 
-    if (id || opted) {
+    if (id) {
       didierPushStatus("✅ Notifications activées. " + (id ? "ID: " + id : "Opted-in"), true);
     } else {
       didierPushStatus("Permission OK mais aucun subscriber. Ouvre /push-debug.html et envoie-moi la capture.", false);
