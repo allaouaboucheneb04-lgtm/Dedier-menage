@@ -48,7 +48,7 @@ OneSignalDeferred.push(async function(OneSignal) {
         console.log("PushSubscription changed", event);
         const id = OneSignal.User?.PushSubscription?.id || "";
         const opted = OneSignal.User?.PushSubscription?.optedIn || false;
-        if (id || opted) didierPushStatus("✅ Notifications activées. " + (id ? "ID: " + id : ""), true);
+        if (id) didierPushStatus("✅ Notifications activées. ID: " + id, true); else didierPushStatus("❌ Aucun Subscription ID OneSignal.", false);
       });
     } catch(e) {}
   } catch (e) {
@@ -78,8 +78,7 @@ window.didierEloEnablePush = async function() {
     }
 
     if (!didierPushStandalone()) {
-      didierPushStatus("Sur iPhone: ouvre depuis l’icône écran d’accueil, pas Safari.", false);
-      return;
+      console.warn("Safari détecté, poursuite du diagnostic.");
     }
 
     didierPushStatus("Chargement OneSignal...");
