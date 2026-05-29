@@ -164,3 +164,15 @@ function setupEmployeeRealtimeNotifications() {
     console.error("Realtime employee notification error:", error);
   }
 }
+
+window.addEventListener("load", () => {
+  const b = document.getElementById("enableNotificationsBtn");
+  if (b) {
+    b.addEventListener("click", (e) => {
+      if (window.didierEloEnablePush) {
+        e.preventDefault();
+        window.didierEloEnablePush();
+      }
+    }, true);
+  }
+});
