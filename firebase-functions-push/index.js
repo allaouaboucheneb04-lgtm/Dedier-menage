@@ -1,14 +1,20 @@
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const { defineSecret } = require("firebase-functions/params");
-const logger = require("firebase-functions/logger");
 const https = require("https");
 
 const ONESIGNAL_REST_KEY = defineSecret("ONESIGNAL_REST_KEY");
 const ONESIGNAL_APP_ID = "6c4e8421-6a3f-48e1-948c-f7a5d07ed234";
 
-function postToOneSignal(restKey, payload) {
+function sendOneSignal(title, message, data = {}) {
   return new Promise((resolve, reject) => {
-    const body = JSON.stringify(payload);
+    const body = JSON.stringify({
+      app_id: ONESIGNAL_APP_ID,
+      included_segments: ["Subscribed Users"],
+      headings: { en: title, fr: title },
+      contents: { en: message, fr: message },
+      url: "https://www.didiereloservices.com/admin.html",
+      data
+    });
 
     const req = https.request(
       {
@@ -17,7 +23,7 @@ function postToOneSignal(restKey, payload) {
         method: "POST",
         headers: {
           "Content-Type": "application/json; charset=utf-8",
-          "Authorization": "Key " + restKey,
+          "Authorization": "Key " + ONESIGNAL_REST_KEY.value(),
           "Content-Length": Buffer.byteLength(body)
         }
       },
@@ -25,9 +31,12 @@ function postToOneSignal(restKey, payload) {
         let response = "";
         res.on("data", (chunk) => (response += chunk));
         res.on("end", () => {
-          logger.info("OneSignal response", { statusCode: res.statusCode, response });
-          if (res.statusCode >= 200 && res.statusCode < 300) resolve(response);
-          else reject(new Error("OneSignal error " + res.statusCode + ": " + response));
+          console.log("OneSignal:", res.statusCode, response);
+          if (res.statusCode >= 200 && res.statusCode < 300) {
+            resolve(response);
+          } else {
+            reject(new Error("OneSignal error " + res.statusCode + ": " + response));
+          }
         });
       }
     );
@@ -38,17 +47,6 @@ function postToOneSignal(restKey, payload) {
   });
 }
 
-async function sendOneSignalNotification(restKey, { title, message, url, data = {} }) {
-  return postToOneSignal(restKey, {
-    app_id: ONESIGNAL_APP_ID,
-    included_segments: ["Subscribed Users"],
-    headings: { fr: title, en: title },
-    contents: { fr: message, en: message },
-    url: url || "https://www.didiereloservices.com/admin.html",
-    data
-  });
-}
-
 exports.notifyNewQuote = onDocumentCreated(
   {
     document: "demandes_soumission/{id}",
@@ -56,30 +54,20 @@ exports.notifyNewQuote = onDocumentCreated(
     secrets: [ONESIGNAL_REST_KEY]
   },
   async (event) => {
-    const quote = event.data ? event.data.data() : {};
-    const id = event.params.id;
+    const q = event.data ? event.data.data() : {};
 
-    const nom =
-      quote.name ||
-      quote.nom ||
-      quote.fullName ||
-      quote.clientName ||
-      "Nouveau client";
+    const nom = q.nom || q.name || q.fullName || q.clientName || "Nouveau client";
+    const service = q.service || q.type || "Soumission";
+    const phone = q.telephone || q.phone || q.tel || "";
 
-    const service = quote.service || quote.type || "Soumission";
-    const phone = quote.phone || quote.telephone || quote.tel || "";
-
-    logger.info("Nouvelle soumission", { id, nom, service, phone });
-
-    return sendOneSignalNotification(ONESIGNAL_REST_KEY.value(), {
-      title: "Nouvelle soumission Didier.Elo",
-      message: `${nom} - ${service}${phone ? " - " + phone : ""}`,
-      url: "https://www.didiereloservices.com/admin.html",
-      data: {
+    return sendOneSignal(
+      "Nouvelle soumission Didier.Elo",
+      `${nom} - ${service}${phone ? " - " + phone : ""}`,
+      {
         type: "new_quote",
-        quoteId: id
+        quoteId: event.params.id
       }
-    });
+    );
   }
 );
 
@@ -90,23 +78,16 @@ exports.notifyAssignedTask = onDocumentCreated(
     secrets: [ONESIGNAL_REST_KEY]
   },
   async (event) => {
-    const task = event.data ? event.data.data() : {};
-    const id = event.params.id;
+    const t = event.data ? event.data.data() : {};
 
-    const service = task.service || "Nouveau travail";
-    const address = task.address || task.adresse || "Adresse non précisée";
-
-    logger.info("Nouveau travail", { id, service, address });
-
-    return sendOneSignalNotification(ONESIGNAL_REST_KEY.value(), {
-      title: "Nouveau travail assigné",
-      message: `${service} - ${address}`,
-      url: "https://www.didiereloservices.com/admin.html",
-      data: {
+    return sendOneSignal(
+      "Nouveau travail assigné",
+      `${t.service || "Travail"} - ${t.adresse || t.address || ""}`,
+      {
         type: "assigned_task",
-        taskId: id,
-        employeeId: task.employeeId || ""
+        taskId: event.params.id,
+        employeeId: t.employeeId || ""
       }
-    });
+    );
   }
 );
