@@ -1,33 +1,14 @@
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
+const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { defineSecret } = require("firebase-functions/params");
+const logger = require("firebase-functions/logger");
 const https = require("https");
 
-admin.initializeApp();
+const ONESIGNAL_REST_KEY = defineSecret("ONESIGNAL_REST_KEY");
+const ONESIGNAL_APP_ID = "6c4e8421-6a3f-48e1-948c-f7a5d07ed234";
 
-const ONESIGNAL_APP_ID =
-  (functions.config().onesignal && functions.config().onesignal.app_id) ||
-  process.env.ONESIGNAL_APP_ID ||
-  "6c4e8421-6a3f-48e1-948c-f7a5d07ed234";
-
-const ONESIGNAL_REST_KEY =
-  (functions.config().onesignal && functions.config().onesignal.key) ||
-  process.env.ONESIGNAL_REST_KEY;
-
-function sendOneSignalNotification({ title, message, url, data = {} }) {
+function postToOneSignal(restKey, payload) {
   return new Promise((resolve, reject) => {
-    if (!ONESIGNAL_REST_KEY) {
-      console.error("ONESIGNAL_REST_KEY manquante. Ajoute la clé REST API OneSignal dans Firebase Functions config.");
-      return resolve(null);
-    }
-
-    const body = JSON.stringify({
-      app_id: ONESIGNAL_APP_ID,
-      included_segments: ["Subscribed Users"],
-      headings: { fr: title, en: title },
-      contents: { fr: message, en: message },
-      url: url || "https://www.didiereloservices.com/admin.html",
-      data
-    });
+    const body = JSON.stringify(payload);
 
     const req = https.request(
       {
@@ -36,7 +17,7 @@ function sendOneSignalNotification({ title, message, url, data = {} }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json; charset=utf-8",
-          "Authorization": "Key " + ONESIGNAL_REST_KEY,
+          "Authorization": "Key " + restKey,
           "Content-Length": Buffer.byteLength(body)
         }
       },
@@ -44,12 +25,9 @@ function sendOneSignalNotification({ title, message, url, data = {} }) {
         let response = "";
         res.on("data", (chunk) => (response += chunk));
         res.on("end", () => {
-          console.log("OneSignal response:", res.statusCode, response);
-          if (res.statusCode >= 200 && res.statusCode < 300) {
-            resolve(response);
-          } else {
-            reject(new Error("OneSignal error " + res.statusCode + ": " + response));
-          }
+          logger.info("OneSignal response", { statusCode: res.statusCode, response });
+          if (res.statusCode >= 200 && res.statusCode < 300) resolve(response);
+          else reject(new Error("OneSignal error " + res.statusCode + ": " + response));
         });
       }
     );
@@ -60,10 +38,26 @@ function sendOneSignalNotification({ title, message, url, data = {} }) {
   });
 }
 
-exports.notifyNewQuote = functions.firestore
-  .document("demandes_soumission/{id}")
-  .onCreate(async (snap, context) => {
-    const quote = snap.data() || {};
+async function sendOneSignalNotification(restKey, { title, message, url, data = {} }) {
+  return postToOneSignal(restKey, {
+    app_id: ONESIGNAL_APP_ID,
+    included_segments: ["Subscribed Users"],
+    headings: { fr: title, en: title },
+    contents: { fr: message, en: message },
+    url: url || "https://www.didiereloservices.com/admin.html",
+    data
+  });
+}
+
+exports.notifyNewQuote = onDocumentCreated(
+  {
+    document: "demandes_soumission/{id}",
+    region: "us-central1",
+    secrets: [ONESIGNAL_REST_KEY]
+  },
+  async (event) => {
+    const quote = event.data ? event.data.data() : {};
+    const id = event.params.id;
 
     const nom =
       quote.name ||
@@ -75,33 +69,44 @@ exports.notifyNewQuote = functions.firestore
     const service = quote.service || quote.type || "Soumission";
     const phone = quote.phone || quote.telephone || quote.tel || "";
 
-    return sendOneSignalNotification({
+    logger.info("Nouvelle soumission", { id, nom, service, phone });
+
+    return sendOneSignalNotification(ONESIGNAL_REST_KEY.value(), {
       title: "Nouvelle soumission Didier.Elo",
       message: `${nom} - ${service}${phone ? " - " + phone : ""}`,
       url: "https://www.didiereloservices.com/admin.html",
       data: {
         type: "new_quote",
-        quoteId: context.params.id
+        quoteId: id
       }
     });
-  });
+  }
+);
 
-exports.notifyAssignedTask = functions.firestore
-  .document("taches/{id}")
-  .onCreate(async (snap, context) => {
-    const task = snap.data() || {};
+exports.notifyAssignedTask = onDocumentCreated(
+  {
+    document: "taches/{id}",
+    region: "us-central1",
+    secrets: [ONESIGNAL_REST_KEY]
+  },
+  async (event) => {
+    const task = event.data ? event.data.data() : {};
+    const id = event.params.id;
 
     const service = task.service || "Nouveau travail";
     const address = task.address || task.adresse || "Adresse non précisée";
 
-    return sendOneSignalNotification({
+    logger.info("Nouveau travail", { id, service, address });
+
+    return sendOneSignalNotification(ONESIGNAL_REST_KEY.value(), {
       title: "Nouveau travail assigné",
       message: `${service} - ${address}`,
       url: "https://www.didiereloservices.com/admin.html",
       data: {
         type: "assigned_task",
-        taskId: context.params.id,
+        taskId: id,
         employeeId: task.employeeId || ""
       }
     });
-  });
+  }
+);
