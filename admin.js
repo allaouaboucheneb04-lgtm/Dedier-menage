@@ -349,9 +349,9 @@ function setupRealtimeQuotes() {
         return;
       }
 
-      snap.docChanges().forEach(async (change) => {
+      snap.docChanges().forEach((change) => {
         if (change.type === "added") {
-          await safeNotify("Nouvelle soumission Didier.Elo", "Nouvelle demande reçue.");
+          // La notification push est envoyée par la Firebase Function (notifyNewQuote).
           loadQuotes();
         }
       });
@@ -361,12 +361,8 @@ function setupRealtimeQuotes() {
   }
 }
 
-async function safeNotify(title, body) {
-  try {
-    const mod = await import("./notifications.js");
-    mod.showLocalNotification(title, body);
-  } catch (e) {}
-}
+// Les notifications de nouvelles soumissions sont gérées par la Firebase Function
+// notifyNewQuote qui envoie via l'API OneSignal côté serveur — fiable sur iPhone.
 
 function phoneLink(phone) {
   if (!phone) return "-";
@@ -386,14 +382,4 @@ function escapeHtml(value) {
   }[m]));
 }
 
-window.addEventListener("load", () => {
-  const b = document.getElementById("enableNotificationsBtn");
-  if (b) {
-    b.addEventListener("click", (e) => {
-      if (window.didierEloEnablePush) {
-        e.preventDefault();
-        window.didierEloEnablePush();
-      }
-    }, true);
-  }
-});
+// Note: le bouton enableNotificationsBtn est câblé dans onAuthStateChanged ci-dessus.

@@ -60,7 +60,7 @@ function loadOneSignalSdkOnce() {
         await OneSignal.init({
           appId: DIDIER_ONESIGNAL_APP_ID,
           notifyButton: { enable: false },
-          welcomeNotification: { disable: false }
+          welcomeNotification: { disable: true }
         });
 
         window.didierPushState.ready = true;
@@ -87,6 +87,7 @@ function loadOneSignalSdkOnce() {
       } catch(e) {
         window.didierPushState.error = e.message || String(e);
         window.didierPushState.loading = false;
+        didierLoadPromise = null; // Permet une nouvelle tentative au prochain clic
         didierPushStatus("Erreur init OneSignal: " + window.didierPushState.error, false);
         reject(e);
       }
@@ -96,7 +97,7 @@ function loadOneSignalSdkOnce() {
       const s = document.createElement("script");
       s.src = "https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js";
       s.async = true;
-      s.onerror = () => reject(new Error("Impossible de charger OneSignalSDK.page.js"));
+      s.onerror = () => { didierLoadPromise = null; reject(new Error("Impossible de charger OneSignalSDK.page.js")); };
       document.head.appendChild(s);
     }
   });
@@ -193,7 +194,7 @@ window.didierEloEnablePush = async function() {
     } else if (opted || Notification.permission === "granted") {
       didierPushStatus("✅ Notifications activées.", true);
     } else {
-      didierPushStatus("❌ Aucun Subscription ID OneSignal.", false);
+      didierPushStatus("❌ Abonnement non créé. Vérifie ta connexion internet et réessaie.", false);
     }
   } catch(e) {
     console.error(e);
