@@ -1,11 +1,16 @@
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const https = require("https");
 
-const ONESIGNAL_REST_KEY = "os_v2_org_sfhiqb6wkjarhjdriswfou6y5e33qdnedhzugonuhl4b25ecqu5jex6zgdsrtkk2emwkr54x43wzcpwqdg3guf4orotsp2qpjbexvzq";
 const ONESIGNAL_APP_ID = "6c4e8421-6a3f-48e1-948c-f7a5d07ed234";
 
 function sendOneSignal(title, message, data = {}) {
   return new Promise((resolve, reject) => {
+    // La clé est lue depuis la variable d'environnement ONESIGNAL_REST_KEY
+    const key = process.env.ONESIGNAL_REST_KEY;
+    if (!key) {
+      return reject(new Error("ONESIGNAL_REST_KEY manquante. Crée le fichier .env dans firebase-functions-push/"));
+    }
+
     const body = JSON.stringify({
       app_id: ONESIGNAL_APP_ID,
       included_segments: ["Subscribed Users"],
@@ -22,7 +27,7 @@ function sendOneSignal(title, message, data = {}) {
         method: "POST",
         headers: {
           "Content-Type": "application/json; charset=utf-8",
-          "Authorization": "Basic " + ONESIGNAL_REST_KEY,
+          "Authorization": "Basic " + key,
           "Content-Length": Buffer.byteLength(body)
         }
       },
