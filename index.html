@@ -9,7 +9,6 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css?v=datafix-1" />
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js?v=datafix-1"></script>
-  <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="logo.jpeg">
   <meta name="theme-color" content="#006bd6">
   <meta name="mobile-web-app-capable" content="yes">
@@ -41,34 +40,27 @@
 </nav>
 
 <main>
+
+  <!-- HERO -->
   <section id="accueil" class="hero">
     <div class="heroShade"></div>
     <div class="heroContent">
-      <span class="eyebrow">Nettoyage premium • Laval & Montréal</span>
+      <span class="eyebrow">Nettoyage premium • Laval &amp; Montréal</span>
       <h1>Votre espace propre, frais et impeccable.</h1>
       <p>Un service professionnel pour bureaux, commerces, immeubles résidentiels, Airbnb, après construction et grand ménage.</p>
       <div class="heroButtons">
         <a href="#soumission" class="btn primary">Demander une soumission</a>
-        <a href="tel:5144735315" class="btn secondary">Appeler maintenant</a>
+        <a href="tel:5144735315" class="btn secondary">📞 514 473-5315</a>
+      </div>
+      <div class="heroCredits">
+        <div class="heroCredit"><strong>200+</strong><span>Clients satisfaits</span></div>
+        <div class="heroCredit"><strong>7j/7</strong><span>Disponible</span></div>
+        <div class="heroCredit"><strong>24h</strong><span>Réponse garantie</span></div>
       </div>
     </div>
   </section>
 
-  <section class="videoShowcase">
-    <div class="videoText">
-      <span>Présentation vidéo</span>
-      <h2>Découvrez nos services de nettoyage</h2>
-      <p>Une vidéo moderne qui présente les différents services de Didier.Elo Multi Service Inc.</p>
-    </div>
-
-    <div class="videoFrame">
-      <video controls playsinline poster="logo.jpeg">
-        <source src="videos/nettoyage.mp4" type="video/mp4">
-        Votre navigateur ne supporte pas la vidéo.
-      </video>
-    </div>
-  </section>
-
+  <!-- SERVICES -->
   <section id="services" class="section">
     <div class="sectionHead">
       <span>Nos services</span>
@@ -84,14 +76,78 @@
     </div>
   </section>
 
+  <!-- POURQUOI NOUS — texte corrigé -->
+  <section class="why">
+    <div>
+      <span class="eyebrow dark">Pourquoi nous choisir</span>
+      <h2>Une équipe fiable, des résultats impeccables.</h2>
+      <p>Depuis des années, Didier.Elo offre un service de nettoyage professionnel à Laval et Montréal. Chaque espace est traité avec soin, rigueur et les meilleurs produits du marché.</p>
+    </div>
+    <div class="whyList">
+      <div>✅ Qualité garantie à chaque intervention</div>
+      <div>⏱️ Réponse sous 24 heures</div>
+      <div>🧼 Produits professionnels haute qualité</div>
+      <div>🤝 Équipe ponctuelle et de confiance</div>
+    </div>
+  </section>
 
+  <!-- TÉMOIGNAGES -->
+  <section class="testimonialsSection">
+    <div class="sectionHead">
+      <span>Avis clients</span>
+      <h2>Ce que disent nos clients</h2>
+    </div>
+    <div class="testimonialsGrid">
+      <div class="testimonialCard">
+        <div class="testimonialStars">⭐⭐⭐⭐⭐</div>
+        <p>« Service impeccable ! Mon bureau n'a jamais été aussi propre. L'équipe est ponctuelle, professionnelle et très efficace. Je recommande fortement. »</p>
+        <div class="testimonialAuthor">
+          <div class="testimonialAvatar">M</div>
+          <div><strong>Marie Tremblay</strong><span>Laval, QC</span></div>
+        </div>
+      </div>
+      <div class="testimonialCard">
+        <div class="testimonialStars">⭐⭐⭐⭐⭐</div>
+        <p>« Didier.Elo a fait un travail extraordinaire après notre rénovation. Tout était propre du plancher au plafond. Très satisfait du résultat. »</p>
+        <div class="testimonialAuthor">
+          <div class="testimonialAvatar">J</div>
+          <div><strong>Jean-Pierre Roy</strong><span>Montréal, QC</span></div>
+        </div>
+      </div>
+      <div class="testimonialCard">
+        <div class="testimonialStars">⭐⭐⭐⭐⭐</div>
+        <p>« Je fais appel à eux pour mes Airbnb depuis plusieurs mois. Toujours rapides, soigneux et mes voyageurs adorent la propreté des logements. »</p>
+        <div class="testimonialAuthor">
+          <div class="testimonialAvatar">S</div>
+          <div><strong>Sophie Bergeron</strong><span>Montréal, QC</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ZONES DESSERVIES -->
+  <section class="zonesSection">
+    <div class="sectionHead">
+      <span>Zones desservies</span>
+      <h2>Nous intervenons dans toute la région</h2>
+    </div>
+    <div class="zonesGrid">
+      <div class="zoneCard">📍 <strong>Laval</strong></div>
+      <div class="zoneCard">📍 <strong>Montréal</strong></div>
+      <div class="zoneCard">📍 <strong>Rive-Nord</strong></div>
+      <div class="zoneCard">📍 <strong>Longueuil</strong></div>
+      <div class="zoneCard">📍 <strong>Brossard</strong></div>
+      <div class="zoneCard">📍 <strong>Et environs</strong></div>
+    </div>
+    <p class="zoneNote">Vous n'êtes pas sûr que nous couvrons votre secteur ? <a href="tel:5144735315">Appelez-nous</a> — nous faisons de notre mieux pour vous servir.</p>
+  </section>
+
+  <!-- GALERIE -->
   <section class="autoGallery">
     <div class="sectionHead">
       <span>Galerie</span>
       <h2>Découvrez notre travail en images</h2>
-      <p>Les photos changent automatiquement chaque 3 secondes.</p>
     </div>
-
     <div class="slider" id="homeSlider">
       <div class="slide active" style="background-image:url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1600&q=80')">
         <div><h3>Nettoyage professionnel</h3><p>Propreté, qualité et confiance.</p></div>
@@ -111,30 +167,31 @@
     </div>
   </section>
 
-  <section class="why">
-    <div>
-      <span class="eyebrow dark">Pourquoi nous choisir</span>
-      <h2>Une image propre, sérieuse et professionnelle.</h2>
-      <p>Un site clair, moderne et rassurant. Le formulaire est facile à remplir sur téléphone et il envoie la demande par EmailJS + Firebase.</p>
+  <!-- VIDÉO — déplacée après la galerie -->
+  <section class="videoShowcase">
+    <div class="videoText">
+      <span>Présentation vidéo</span>
+      <h2>Découvrez nos services de nettoyage</h2>
+      <p>Voyez par vous-même la qualité et le professionnalisme de l'équipe Didier.Elo.</p>
     </div>
-    <div class="whyList">
-      <div>✅ Qualité garantie</div>
-      <div>⏱️ Réponse rapide</div>
-      <div>🧼 Résultat impeccable</div>
-      <div>🤝 Équipe fiable</div>
+    <div class="videoFrame">
+      <video controls playsinline poster="logo.jpeg">
+        <source src="videos/nettoyage.mp4" type="video/mp4">
+        Votre navigateur ne supporte pas la vidéo.
+      </video>
     </div>
   </section>
 
+  <!-- SOUMISSION -->
   <section id="soumission" class="quoteSection">
     <div class="quoteHeader">
       <span>Soumission gratuite</span>
       <h2>Demandez votre estimation</h2>
       <p>Remplissez le formulaire, nous vous contacterons rapidement.</p>
     </div>
-
     <form id="quoteForm" class="quoteForm">
       <label>Nom complet<input name="name" required placeholder="Votre nom"></label>
-      <label>Téléphone<input name="phone" required placeholder="514 000 0000"></label>
+      <label>Téléphone<input name="phone" required placeholder="514 000-0000"></label>
       <label>Email<input name="email" type="email" placeholder="votre@email.com"></label>
       <label>Service
         <select name="service" required>
@@ -155,38 +212,33 @@
     </form>
   </section>
 
-  
+  <!-- CONTACT — gardé mais simplifié, footer gère le reste -->
   <section class="contact contactPro">
     <div class="contactCard">
       <div class="contactLogo">
         <img src="logo.jpeg" alt="Didier.Elo Multi Service Inc">
       </div>
-
       <div class="contactContent">
         <span>Contact rapide</span>
         <h2>Didier.Elo Multi Service Inc</h2>
-        <p class="contactSub">Service de nettoyage et d’entretien professionnel à Laval, Montréal et environs.</p>
-
+        <p class="contactSub">Service de nettoyage et d'entretien professionnel à Laval, Montréal et environs. Disponible 7 jours sur 7.</p>
         <div class="contactGrid">
           <a href="tel:5144735315" class="contactItem">
             <b>📞 Téléphone</b>
-            <strong><a href="tel:5144735315">514 473 5315</a></strong>
-            <small><a href="tel:4388367993">438 836 7993</a></small>
+            <strong>514 473-5315</strong>
+            <small>438 836-7993</small>
           </a>
-
           <a href="mailto:didierelo69@gmail.com" class="contactItem">
             <b>✉️ Email</b>
             <strong>didierelo69@gmail.com</strong>
             <small>Réponse rapide</small>
           </a>
-
           <div class="contactItem">
-            <b>📍 Adresse</b>
-            <strong><a href="https://www.google.com/maps/search/?api=1&query=1344%20chemin%20du%20Bord-de-l%E2%80%99Eau%20Laval%20QC%20H7Y%201C1" target="_blank" rel="noopener">1344 chemin du Bord-de-l’Eau</a></strong>
-            <small>Laval, QC H7Y 1C1</small>
+            <b>🕐 Disponibilité</b>
+            <strong>7 jours sur 7</strong>
+            <small>8h00 — 20h00</small>
           </div>
         </div>
-
         <div class="contactActions">
           <a href="tel:5144735315" class="contactBtn main">Appeler maintenant</a>
           <a href="#soumission" class="contactBtn light">Demander une soumission</a>
@@ -202,66 +254,54 @@
   <a href="#soumission">🧾 Soumission</a>
 </div>
 
-
 <section class="footerLuxury">
-
   <div class="footerTop">
-
     <div class="footerBrand">
       <img src="logo.jpeg" alt="Didier.Elo">
-
       <h2>Didier.Elo Multi Service Inc</h2>
-
-      <p>
-        Service professionnel de nettoyage et d’entretien
-        pour bureaux, commerces, Airbnb et immeubles résidentiels.
-      </p>
-
+      <p>Service professionnel de nettoyage et d'entretien pour bureaux, commerces, Airbnb et immeubles résidentiels.</p>
       <div class="footerButtons">
-        <a href="tel:5144735315" class="footerBtn blue">
-          📞 Appeler
-        </a>
-
-        <a href="index.html#soumission" class="footerBtn white">
-          🧾 Soumission
-        </a>
+        <a href="tel:5144735315" class="footerBtn blue">📞 Appeler</a>
+        <a href="index.html#soumission" class="footerBtn white">🧾 Soumission</a>
       </div>
     </div>
-
     <div class="footerInfo">
-
       <div class="footerBox">
         <span>Téléphone</span>
-        <a href="tel:5144735315">514 473 5315</a>
-        <a href="tel:4388367993">438 836 7993</a>
+        <a href="tel:5144735315">514 473-5315</a>
+        <a href="tel:4388367993">438 836-7993</a>
       </div>
-
       <div class="footerBox">
         <span>Email</span>
-        <a href="mailto:didierelo69@gmail.com">
-          didierelo69@gmail.com
-        </a>
+        <a href="mailto:didierelo69@gmail.com">didierelo69@gmail.com</a>
       </div>
-
       <div class="footerBox">
         <span>Adresse</span>
-        <p>
-          <a href="https://www.google.com/maps/search/?api=1&query=1344%20chemin%20du%20Bord-de-l%E2%80%99Eau%20Laval%20QC%20H7Y%201C1" target="_blank" rel="noopener">1344 chemin du Bord-de-l’Eau</a><br>
-          Laval, QC H7Y 1C1
-        </p>
+        <p><a href="https://www.google.com/maps/search/?api=1&query=1344+chemin+du+Bord-de-l'Eau+Laval+QC+H7Y+1C1" target="_blank" rel="noopener">1344 chemin du Bord-de-l'Eau</a><br>Laval, QC H7Y 1C1</p>
       </div>
-
     </div>
-
   </div>
-
   <div class="footerBottom">
     © Didier.Elo Multi Service Inc — Propreté • Qualité • Confiance
   </div>
-
 </section>
 
 <script type="module" src="app.js?v=datafix-1"></script>
 <script src="pwa.js?v=datafix-1"></script>
+<script>
+const drawer = document.getElementById("drawer");
+document.getElementById("openMenu").onclick = () => drawer.classList.add("open");
+document.getElementById("closeMenu").onclick = () => drawer.classList.remove("open");
+document.querySelectorAll(".drawer a").forEach(a => a.onclick = () => drawer.classList.remove("open"));
+
+// Slider auto
+const slides = document.querySelectorAll("#homeSlider .slide");
+let current = 0;
+setInterval(() => {
+  slides[current].classList.remove("active");
+  current = (current + 1) % slides.length;
+  slides[current].classList.add("active");
+}, 3000);
+</script>
 </body>
 </html>
