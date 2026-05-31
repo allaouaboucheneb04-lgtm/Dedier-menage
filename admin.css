@@ -302,3 +302,61 @@ body.adminBody{background:#eef6ff;color:#071f3d;padding-bottom:0}.adminTop{posit
   .socialRow { flex-wrap: wrap; }
   .socialInfo { width: 100%; }
 }
+
+/* ===== PROFIL EMPLOYÉ ===== */
+.profileView {
+  padding: 8px 0 16px;
+}
+.profileGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.profileItem {
+  background: #f8fcff;
+  border: 1px solid #e0ecff;
+  border-radius: 16px;
+  padding: 16px;
+}
+.profileItem span {
+  display: block;
+  color: #60758d;
+  font-size: .82rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.profileItem strong {
+  display: block;
+  color: #0a1628;
+  font-size: .95rem;
+  font-weight: 800;
+}
+.profileNote {
+  color: #8097b1;
+  font-size: .85rem;
+  font-style: italic;
+}
+.profileFormGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.profileFormGrid .full {
+  grid-column: 1 / -1;
+}
+
+@media(max-width: 850px) {
+  .profileGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .profileFormGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media(max-width: 480px) {
+  .profileGrid {
+    grid-template-columns: 1fr;
+  }
+}

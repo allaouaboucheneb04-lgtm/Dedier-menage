@@ -28,6 +28,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   await loadTasks();
+  await loadProfile();
   setupEmployeeRealtimeNotifications();
 
   const notifBtn = document.getElementById("enableNotificationsBtn");
@@ -176,3 +177,103 @@ window.addEventListener("load", () => {
     }, true);
   }
 });
+
+// ========== PROFIL EMPLOYÉ ==========
+
+async function loadProfile() {
+  try {
+    const snap = await getDoc(doc(db, ROLES_COLLECTION, currentUser.uid));
+    if (!snap.exists()) return;
+    const data = snap.data();
+
+    // Remplir la vue
+    setText("viewName", data.name || "Non renseigné");
+    setText("viewPhone", data.phone || "Non renseigné");
+    setText("viewAddress", data.address || "Non renseigné");
+    setText("viewTransport", data.transport || "Non renseigné");
+    setText("viewZone", data.zone || "Non renseigné");
+    setText("viewAvailability", data.availability || "Non renseigné");
+
+    // Remplir le formulaire
+    setVal("profileName", data.name || "");
+    setVal("profilePhone", data.phone || "");
+    setVal("profileAddress", data.address || "");
+    setVal("profileTransport", data.transport || "");
+    setVal("profileZone", data.zone || "");
+    setVal("profileAvailability", data.availability || "");
+    setVal("profileNote", data.employeeNote || "");
+  } catch(e) {
+    console.warn("loadProfile", e);
+  }
+}
+
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+function setVal(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.value = value;
+}
+
+// Bouton Modifier
+const editProfileBtn = document.getElementById("editProfileBtn");
+if (editProfileBtn) {
+  editProfileBtn.onclick = () => {
+    document.getElementById("profileView").style.display = "none";
+    document.getElementById("profileForm").style.display = "block";
+    editProfileBtn.style.display = "none";
+  };
+}
+
+// Bouton Annuler
+const cancelProfileBtn = document.getElementById("cancelProfileBtn");
+if (cancelProfileBtn) {
+  cancelProfileBtn.onclick = () => {
+    document.getElementById("profileView").style.display = "block";
+    document.getElementById("profileForm").style.display = "none";
+    document.getElementById("editProfileBtn").style.display = "";
+  };
+}
+
+// Sauvegarder profil
+const profileForm = document.getElementById("profileForm");
+if (profileForm) {
+  profileForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const status = document.getElementById("profileStatus");
+    status.textContent = "Sauvegarde...";
+    status.style.color = "#006bd6";
+
+    try {
+      const profileData = {
+        name: document.getElementById("profileName").value.trim(),
+        phone: document.getElementById("profilePhone").value.trim(),
+        address: document.getElementById("profileAddress").value.trim(),
+        transport: document.getElementById("profileTransport").value,
+        zone: document.getElementById("profileZone").value,
+        availability: document.getElementById("profileAvailability").value,
+        employeeNote: document.getElementById("profileNote").value.trim(),
+        profileUpdatedAt: serverTimestamp()
+      };
+
+      await updateDoc(doc(db, ROLES_COLLECTION, currentUser.uid), profileData);
+
+      status.textContent = "✅ Profil sauvegardé !";
+      status.style.color = "#078b45";
+
+      await loadProfile();
+
+      setTimeout(() => {
+        document.getElementById("profileView").style.display = "block";
+        document.getElementById("profileForm").style.display = "none";
+        document.getElementById("editProfileBtn").style.display = "";
+        status.textContent = "";
+      }, 1500);
+    } catch(err) {
+      status.textContent = "❌ Erreur: " + err.message;
+      status.style.color = "#d21f3c";
+    }
+  });
+}
