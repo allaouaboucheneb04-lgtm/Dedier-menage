@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Admin | Didier.Elo</title>
   <link rel="icon" href="logo.jpeg">
-  <link rel="stylesheet" href="style.css?v=admin-v3">
-  <link rel="stylesheet" href="admin.css?v=admin-v3">
+  <link rel="stylesheet" href="style.css?v=datafix-1">
+  <link rel="stylesheet" href="admin.css?v=datafix-1">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="logo.jpeg">
   <meta name="theme-color" content="#006bd6">
@@ -24,93 +24,71 @@
         <span id="adminEmail">Chargement...</span>
       </div>
     </div>
+
     <div class="adminActionsClean">
       <a href="historique.html" class="smallBtn ok">Historique</a>
-      <button id="enableNotificationsBtn" class="smallBtn">🔔</button>
-      <button id="logoutBtn" class="smallBtn danger">Déco</button>
+      <button id="enableNotificationsBtn" class="smallBtn">🔔 Notifications</button>
+      <a href="/push-debug.html" class="smallBtn">Test push</a>
+      <button id="logoutBtn" class="smallBtn danger">Déconnexion</button>
     </div>
   </header>
 
   <main class="adminMain">
     <section class="adminHero">
       <span class="adminBadge">Tableau de bord</span>
-      <h1>Gestion Didier.Elo</h1>
-      <p>Soumissions, travaux et employés en temps réel.</p>
+      <h1>Gestion des soumissions et travaux</h1>
+      <p>Les clients ne voient pas cette page. Accès direct seulement par <strong>admin.html</strong>.</p>
     </section>
 
-    <!-- Stats principales -->
     <section class="adminStats">
       <div><strong id="countQuotes">0</strong><span>Soumissions</span></div>
-      <div><strong id="countTasks">0</strong><span>Travaux actifs</span></div>
+      <div><strong id="countTasks">0</strong><span>Travaux</span></div>
       <div><strong id="countEmployees">0</strong><span>Employés</span></div>
     </section>
 
-    <!-- Stats détaillées -->
-    <section class="statsGrid">
-      <div class="statCard">
-        <div class="statIcon">📅</div>
-        <div>
-          <strong id="statWeek">-</strong>
-          <span>Cette semaine</span>
-        </div>
-      </div>
-      <div class="statCard">
-        <div class="statIcon">📆</div>
-        <div>
-          <strong id="statMonth">-</strong>
-          <span>Ce mois</span>
-        </div>
-      </div>
-      <div class="statCard">
-        <div class="statIcon">📊</div>
-        <div>
-          <strong id="statTotal">-</strong>
-          <span>Total</span>
-        </div>
-      </div>
-      <div class="statCard">
-        <div class="statIcon">⭐</div>
-        <div>
-          <strong id="statTopService" style="font-size:1rem">-</strong>
-          <span>Service populaire</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Inviter employé -->
+    
     <section class="panel">
       <div class="panelHead">
         <div>
           <span class="adminBadge">Employés</span>
-          <h2>Inviter un employé</h2>
+          <h2>Inviter un employé par email</h2>
         </div>
       </div>
+
       <form id="inviteForm" class="adminForm grid3">
         <label>Nom employé
           <input name="name" required placeholder="Nom complet">
         </label>
+
         <label>Email employé
           <input name="email" type="email" required placeholder="email@exemple.com">
         </label>
+
         <label>Rôle
           <select name="role" required>
             <option value="employe">Employé</option>
           </select>
         </label>
+
         <button type="submit">Créer invitation</button>
         <p id="inviteStatus" class="adminStatus full"></p>
       </form>
+
       <div id="inviteResult" class="inviteResult" hidden>
-        <b>Lien d'invitation :</b>
+        <b>Lien d’invitation :</b>
         <input id="inviteLink" readonly>
         <div class="assignRow">
           <button id="copyInvite" class="smallBtn">Copier le lien</button>
           <a id="emailInvite" class="smallBtn ok" href="#">Envoyer par email</a>
         </div>
       </div>
+
+      <p class="hint">
+        L’employé reçoit le lien, crée son mot de passe et son compte sera automatiquement ajouté dans Firestore.
+      </p>
     </section>
 
-    <!-- Soumissions -->
+
     <section class="panel">
       <div class="panelHead">
         <div>
@@ -119,25 +97,9 @@
         </div>
         <button id="refreshQuotes" class="smallBtn">Rafraîchir</button>
       </div>
-
-      <!-- Recherche -->
-      <div class="searchBar">
-        <input id="searchQuotes" type="search" placeholder="🔍 Rechercher par nom, service, téléphone...">
-      </div>
-
-      <!-- Filtres -->
-      <div class="filterBar">
-        <button class="filterBtn active" data-filter="tous">Tous</button>
-        <button class="filterBtn" data-filter="nouveau">Nouveaux</button>
-        <button class="filterBtn" data-filter="assigné">Assignés</button>
-        <button class="filterBtn" data-filter="terminé">Terminés</button>
-        <span id="filterCount" class="filterCount"></span>
-      </div>
-
       <div id="quotesList" class="cardsList"></div>
     </section>
 
-    <!-- Travaux -->
     <section class="panel">
       <div class="panelHead">
         <div>
@@ -148,15 +110,17 @@
       </div>
       <div id="tasksList" class="cardsList"></div>
     </section>
+  <p id="notificationStatus" class="notificationStatus"></p>
 
-    <p id="notificationStatus" class="notificationStatus"></p>
-    <div class="installHint">
-      📲 Pour l'utiliser comme une app : Safari → Partager → Ajouter à l'écran d'accueil.
-    </div>
-  </main>
+<div class="installHint">
+  📲 Pour l’utiliser comme une app : Safari/Chrome → Partager → Ajouter à l’écran d’accueil.
+</div>
 
-  <script type="module" src="admin.js?v=admin-v3"></script>
-  <script src="pwa.js?v=admin-v3"></script>
-  <script src="/push.js?v=newapp2" defer></script>
+</main>
+
+  <script type="module" src="admin.js?v=datafix-1"></script>
+<script src="pwa.js?v=datafix-1"></script>
+<script src="/push.js?v=newapp2" defer></script>
+
 </body>
 </html>
