@@ -183,26 +183,50 @@ body.adminBody{background:#eef6ff;color:#071f3d;padding-bottom:0}.adminTop{posit
   display:flex;
   align-items:center;
   justify-content:flex-end;
-  gap:10px;
+  gap:8px;
   flex-wrap:nowrap;
 }
 
 .adminActionsClean .smallBtn{
-  min-height:48px;
+  min-height:44px;
   display:inline-flex;
   align-items:center;
   justify-content:center;
   text-decoration:none;
+  white-space:nowrap;
 }
+
+/* Menu burger sur mobile pour les boutons admin */
+.adminMenuToggle{
+  display:none;
+  border:0;background:#006bd6;color:white;
+  width:44px;height:44px;border-radius:14px;
+  font-size:1.3rem;cursor:pointer;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+
+.adminMenuDropdown{
+  display:none;position:absolute;top:70px;right:12px;
+  background:white;border-radius:20px;padding:12px;
+  box-shadow:0 16px 50px rgba(0,0,0,.18);
+  z-index:200;min-width:200px;
+  border:1px solid #e0ecff;
+}
+.adminMenuDropdown.open{display:block}
+.adminMenuDropdown .smallBtn,.adminMenuDropdown a.smallBtn{
+  display:block;width:100%;margin-bottom:8px;
+  text-align:center;border-radius:12px;
+}
+.adminMenuDropdown .smallBtn:last-child{margin-bottom:0}
 
 @media(max-width:850px){
   .adminTopClean{
     padding:10px 12px;
+    position:relative;
   }
 
   .adminTopClean .adminBrand{
     flex:0 0 auto;
-    max-width:105px;
   }
 
   .adminTopClean .adminBrand div{
@@ -210,23 +234,19 @@ body.adminBody{background:#eef6ff;color:#071f3d;padding-bottom:0}.adminTop{posit
   }
 
   .adminTopClean .adminBrand img{
-    width:52px !important;
-    height:52px !important;
-    border-radius:16px;
-  }
-
-  .adminActionsClean{
-    flex:1;
-    justify-content:flex-end;
-    gap:7px;
-    overflow:visible;
-  }
-
-  .adminActionsClean .smallBtn{
-    padding:10px 11px;
+    width:46px !important;
+    height:46px !important;
     border-radius:14px;
-    font-size:.78rem;
-    white-space:nowrap;
+  }
+
+  /* Cacher les boutons sur mobile sauf déconnexion */
+  .adminActionsClean{
+    display:none;
+  }
+
+  /* Afficher le burger */
+  .adminMenuToggle{
+    display:flex;
   }
 
   .adminHero{
@@ -235,9 +255,9 @@ body.adminBody{background:#eef6ff;color:#071f3d;padding-bottom:0}.adminTop{posit
 }
 
 @media(max-width:390px){
-  .adminActionsClean .smallBtn{
-    font-size:.72rem;
-    padding:9px 8px;
+  .adminMenuDropdown{
+    right:8px;
+    min-width:180px;
   }
 }
 

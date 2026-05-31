@@ -241,8 +241,10 @@ function renderQuotes() {
 
   let filtered = allQuotes;
 
-  // Filtre par statut
-  if (activeFilter !== "tous") {
+  // Toujours cacher les annulés sauf si filtre explicite
+  if (activeFilter === "tous") {
+    filtered = filtered.filter(q => (q.status || "nouveau") !== "annulé");
+  } else {
     filtered = filtered.filter(q => (q.status || "nouveau") === activeFilter);
   }
 
@@ -542,3 +544,33 @@ document.addEventListener("DOMContentLoaded", () => {
   if (ig) ig.onclick = () => saveSocialLink("instagram", "socialInstagram");
   if (tt) tt.onclick = () => saveSocialLink("tiktok", "socialTiktok");
 });
+
+// ========== MENU MOBILE BURGER ==========
+const adminMenuToggle = document.getElementById("adminMenuToggle");
+const adminMenuDropdown = document.getElementById("adminMenuDropdown");
+
+if (adminMenuToggle && adminMenuDropdown) {
+  adminMenuToggle.onclick = (e) => {
+    e.stopPropagation();
+    adminMenuDropdown.classList.toggle("open");
+  };
+  document.addEventListener("click", () => adminMenuDropdown.classList.remove("open"));
+  adminMenuDropdown.addEventListener("click", e => e.stopPropagation());
+}
+
+// Câbler boutons mobile
+const logoutBtnMobile = document.getElementById("logoutBtnMobile");
+if (logoutBtnMobile) {
+  logoutBtnMobile.onclick = async () => {
+    const { signOut } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js");
+    await signOut(getAuth());
+    location.replace("login.html");
+  };
+}
+
+const notifBtnMobile = document.getElementById("enableNotificationsBtnMobile");
+if (notifBtnMobile) {
+  notifBtnMobile.onclick = async () => {
+    if (window.didierEloEnablePush) window.didierEloEnablePush();
+  };
+}
