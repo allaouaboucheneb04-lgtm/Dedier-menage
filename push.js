@@ -44,6 +44,30 @@ function didierGetSubId(OneSignal) {
          "";
 }
 
+// Sauvegarde le Subscription ID dans Firestore pour ciblage précis
+async function saveSubscriptionToFirestore(subscriptionId) {
+  try {
+    const uid = window.didierCurrentUserId;
+    if (!uid || !subscriptionId) return;
+
+    // Import Firebase dynamiquement
+    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js");
+    const { getFirestore, doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js");
+    const { firebaseConfig } = await import("./firebase-config.js");
+
+    const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    await updateDoc(doc(db, "users", uid), {
+      oneSignalId: subscriptionId,
+      oneSignalUpdatedAt: new Date().toISOString()
+    });
+    console.log("[DidierElo Push] Subscription ID sauvegardé dans Firestore:", subscriptionId);
+  } catch(e) {
+    console.warn("[DidierElo Push] Impossible de sauvegarder dans Firestore:", e);
+  }
+}
+
 let didierLoadPromise = null;
 
 function loadOneSignalSdkOnce() {
@@ -69,7 +93,10 @@ function loadOneSignalSdkOnce() {
         window.didierPushState.oneSignal = OneSignal;
 
         const id = didierGetSubId(OneSignal);
-        if (id) window.didierPushState.lastSubscriptionId = id;
+        if (id) {
+          window.didierPushState.lastSubscriptionId = id;
+          saveSubscriptionToFirestore(id);
+        }
 
         try {
           OneSignal.User.PushSubscription.addEventListener("change", function(event) {
@@ -78,6 +105,7 @@ function loadOneSignalSdkOnce() {
             if (newId) {
               window.didierPushState.lastSubscriptionId = newId;
               didierPushStatus("✅ Notifications activées. ID: " + newId, true);
+              saveSubscriptionToFirestore(newId);
             }
           });
         } catch(e) {
@@ -88,7 +116,7 @@ function loadOneSignalSdkOnce() {
       } catch(e) {
         window.didierPushState.error = e.message || String(e);
         window.didierPushState.loading = false;
-        didierLoadPromise = null; // Permet une nouvelle tentative au prochain clic
+        didierLoadPromise = null;
         didierPushStatus("Erreur init OneSignal: " + window.didierPushState.error, false);
         reject(e);
       }
@@ -108,15 +136,13 @@ function loadOneSignalSdkOnce() {
 
 async function waitForOneSignal(maxMs = 15000) {
   if (window.didierPushState.ready && window.didierPushState.oneSignal) return window.didierPushState.oneSignal;
-
   const p = loadOneSignalSdkOnce();
   const timeout = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error("OneSignal ne charge pas. Recharge l’app puis réessaie.")), maxMs)
+    setTimeout(() => reject(new Error("OneSignal ne charge pas. Recharge l'app puis réessaie.")), maxMs)
   );
   return Promise.race([p, timeout]);
 }
 
-// Précharge sans bloquer l’interface
 loadOneSignalSdkOnce().then((OneSignal) => {
   const id = didierGetSubId(OneSignal);
   const opted = OneSignal?.User?.PushSubscription?.optedIn || false;
@@ -136,7 +162,7 @@ window.didierEloEnablePush = async function() {
 
   try {
     if (!("Notification" in window)) {
-      didierPushStatus("Ce navigateur ne supporte pas les notifications. Ouvre l’icône installée sur iPhone.", false);
+      didierPushStatus("Ce navigateur ne supporte pas les notifications. Ouvre l'icône installée sur iPhone.", false);
       return;
     }
 
@@ -146,9 +172,9 @@ window.didierEloEnablePush = async function() {
     const currentId = didierGetSubId(OneSignal);
     const currentOpted = OneSignal?.User?.PushSubscription?.optedIn || false;
 
-    // Correction du bug: si déjà autorisé/opted-in, ne reste plus bloqué sur Chargement.
     if (currentId) {
       window.didierPushState.lastSubscriptionId = currentId;
+      await saveSubscriptionToFirestore(currentId);
       didierPushStatus("✅ Notifications déjà activées. ID: " + currentId, true);
       return;
     }
@@ -191,6 +217,7 @@ window.didierEloEnablePush = async function() {
 
     if (id) {
       window.didierPushState.lastSubscriptionId = id;
+      await saveSubscriptionToFirestore(id);
       didierPushStatus("✅ Notifications activées. ID: " + id, true);
     } else if (opted || Notification.permission === "granted") {
       didierPushStatus("✅ Notifications activées.", true);
