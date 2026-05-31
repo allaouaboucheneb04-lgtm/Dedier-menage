@@ -3,31 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Didier.Elo Multi Service Inc | Nettoyage professionnel</title>
+  <title>Didier.Elo Multi Service Inc | Nettoyage professionnel Laval & Montréal</title>
   <meta name="description" content="Nettoyage professionnel à Laval et Montréal : bureaux, commerces, immeubles résidentiels, Airbnb, après construction et grand ménage." />
   <link rel="icon" href="logo.jpeg" />
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="style.css?v=datafix-1" />
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js?v=datafix-1"></script>
-  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800;900&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=v3" />
   <link rel="apple-touch-icon" href="logo.jpeg">
-  <meta name="theme-color" content="#006bd6">
+  <meta name="theme-color" content="#0a1628">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Didier.Elo">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
-<header class="header">
+
+<!-- Header -->
+<header class="header" id="header">
   <a href="index.html" class="brand">
     <img src="logo.jpeg" alt="Didier.Elo">
-    <div><strong>Didier.Elo</strong><span>Multi Service Inc</span></div>
+    <div>
+      <strong>Didier.Elo</strong>
+      <span>Multi Service Inc</span>
+    </div>
   </a>
-  <button class="hamburger" id="openMenu">☰</button>
+  <nav class="desktopNav">
+    <a href="#services">Services</a>
+    <a href="#soumission">Soumission</a>
+    <a href="tel:5144735315">514 473-5315</a>
+  </nav>
+  <button class="hamburger" id="openMenu" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </header>
 
+<!-- Drawer mobile -->
 <nav class="drawer" id="drawer">
-  <button class="close" id="closeMenu">×</button>
+  <button class="close" id="closeMenu" aria-label="Fermer">×</button>
   <a href="#accueil">Accueil</a>
   <a href="#services">Services</a>
   <a href="bureaux.html">Bureaux</a>
@@ -36,105 +49,186 @@
   <a href="airbnb.html">Airbnb</a>
   <a href="construction.html">Après construction</a>
   <a href="grand-menage.html">Grand ménage</a>
-  <a href="employes.html">Employés</a>
-  <a href="#soumission">Soumission</a>
+  <a href="#soumission">Soumission gratuite</a>
 </nav>
 
 <main>
+
+  <!-- Hero -->
   <section id="accueil" class="hero">
-    <div class="heroShade"></div>
+    <div class="heroBg"></div>
+    <div class="heroNoise"></div>
     <div class="heroContent">
-      <span class="eyebrow">Nettoyage premium • Laval & Montréal</span>
-      <h1>Votre espace propre, frais et impeccable.</h1>
-      <p>Un service professionnel pour bureaux, commerces, immeubles résidentiels, Airbnb, après construction et grand ménage.</p>
-      <div class="heroButtons">
-        <a href="#soumission" class="btn primary">Demander une soumission</a>
-        <a href="tel:5144735315" class="btn secondary">Appeler maintenant</a>
+      <div class="heroBadge">
+        <span class="heroDot"></span>
+        Laval &amp; Montréal — Service premium
+      </div>
+      <h1>Votre espace,<br><em>impeccable.</em></h1>
+      <p>Nettoyage professionnel pour bureaux, commerces, résidences, Airbnb et après construction.</p>
+      <div class="heroActions">
+        <a href="#soumission" class="btnPrimary">Soumission gratuite →</a>
+        <a href="tel:5144735315" class="btnGhost">📞 514 473-5315</a>
+      </div>
+    </div>
+    <div class="heroStats">
+      <div class="heroStat"><strong>100%</strong><span>Satisfaction</span></div>
+      <div class="heroStatDivider"></div>
+      <div class="heroStat"><strong>6</strong><span>Services</span></div>
+      <div class="heroStatDivider"></div>
+      <div class="heroStat"><strong>24h</strong><span>Réponse</span></div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section id="services" class="servicesSection">
+    <div class="sectionLabel">Nos services</div>
+    <h2 class="sectionTitle">Un service adapté<br>à chaque besoin</h2>
+    <div class="servicesGrid">
+      <a class="serviceCard" href="bureaux.html">
+        <div class="serviceImg" style="background-image:url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80')"></div>
+        <div class="serviceInfo">
+          <h3>Bureaux</h3>
+          <p>Espaces de travail propres et modernes</p>
+          <span class="serviceArrow">→</span>
+        </div>
+      </a>
+      <a class="serviceCard" href="commerces.html">
+        <div class="serviceImg" style="background-image:url('https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=900&q=80')"></div>
+        <div class="serviceInfo">
+          <h3>Commerces</h3>
+          <p>Local accueillant pour vos clients</p>
+          <span class="serviceArrow">→</span>
+        </div>
+      </a>
+      <a class="serviceCard" href="residentiel.html">
+        <div class="serviceImg" style="background-image:url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80')"></div>
+        <div class="serviceInfo">
+          <h3>Résidentiel</h3>
+          <p>Immeubles résidentiels et condos</p>
+          <span class="serviceArrow">→</span>
+        </div>
+      </a>
+      <a class="serviceCard" href="airbnb.html">
+        <div class="serviceImg" style="background-image:url('https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=900&q=80')"></div>
+        <div class="serviceInfo">
+          <h3>Airbnb</h3>
+          <p>Préparation rapide entre réservations</p>
+          <span class="serviceArrow">→</span>
+        </div>
+      </a>
+      <a class="serviceCard" href="construction.html">
+        <div class="serviceImg" style="background-image:url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=900&q=80')"></div>
+        <div class="serviceInfo">
+          <h3>Après construction</h3>
+          <p>Remise en état après travaux</p>
+          <span class="serviceArrow">→</span>
+        </div>
+      </a>
+      <a class="serviceCard" href="grand-menage.html">
+        <div class="serviceImg" style="background-image:url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=80')"></div>
+        <div class="serviceInfo">
+          <h3>Grand ménage</h3>
+          <p>Nettoyage en profondeur complet</p>
+          <span class="serviceArrow">→</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Pourquoi nous -->
+  <section class="whySection">
+    <div class="whyInner">
+      <div class="whyLeft">
+        <div class="sectionLabel light">Pourquoi nous choisir</div>
+        <h2 class="sectionTitle light">Propreté.<br>Fiabilité.<br>Confiance.</h2>
+        <p class="whyDesc">Depuis des années, nous offrons un service irréprochable à nos clients de Laval et Montréal. Chaque espace est traité avec soin et professionnalisme.</p>
+        <a href="#soumission" class="btnPrimary">Obtenir une soumission</a>
+      </div>
+      <div class="whyRight">
+        <div class="whyCard">
+          <div class="whyIcon">✅</div>
+          <div>
+            <strong>Qualité garantie</strong>
+            <p>Résultats impeccables à chaque intervention</p>
+          </div>
+        </div>
+        <div class="whyCard">
+          <div class="whyIcon">⚡</div>
+          <div>
+            <strong>Réponse en 24h</strong>
+            <p>Soumission rapide et sans engagement</p>
+          </div>
+        </div>
+        <div class="whyCard">
+          <div class="whyIcon">🧼</div>
+          <div>
+            <strong>Produits professionnels</strong>
+            <p>Équipements et produits de qualité supérieure</p>
+          </div>
+        </div>
+        <div class="whyCard">
+          <div class="whyIcon">🤝</div>
+          <div>
+            <strong>Équipe de confiance</strong>
+            <p>Personnel formé, ponctuel et fiable</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="videoShowcase">
-    <div class="videoText">
-      <span>Présentation vidéo</span>
-      <h2>Découvrez nos services de nettoyage</h2>
-      <p>Une vidéo moderne qui présente les différents services de Didier.Elo Multi Service Inc.</p>
-    </div>
-
-    <div class="videoFrame">
+  <!-- Vidéo -->
+  <section class="videoSection">
+    <div class="sectionLabel">Présentation</div>
+    <h2 class="sectionTitle">Découvrez nos services</h2>
+    <div class="videoWrap">
       <video controls playsinline poster="logo.jpeg">
         <source src="videos/nettoyage.mp4" type="video/mp4">
-        Votre navigateur ne supporte pas la vidéo.
       </video>
     </div>
   </section>
 
-  <section id="services" class="section">
-    <div class="sectionHead">
-      <span>Nos services</span>
-      <h2>Un service adapté à chaque besoin</h2>
-    </div>
-    <div class="serviceGrid">
-      <a class="serviceCard" href="bureaux.html"><img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80"><h3>Bureaux</h3></a>
-      <a class="serviceCard" href="commerces.html"><img src="https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=900&q=80"><h3>Commerces</h3></a>
-      <a class="serviceCard" href="residentiel.html"><img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80"><h3>Immeubles résidentiels</h3></a>
-      <a class="serviceCard" href="airbnb.html"><img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=900&q=80"><h3>Airbnb</h3></a>
-      <a class="serviceCard" href="construction.html"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=900&q=80"><h3>Après construction</h3></a>
-      <a class="serviceCard" href="grand-menage.html"><img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=80"><h3>Grand ménage</h3></a>
-    </div>
-  </section>
-
-
-  <section class="autoGallery">
-    <div class="sectionHead">
-      <span>Galerie</span>
-      <h2>Découvrez notre travail en images</h2>
-      <p>Les photos changent automatiquement chaque 3 secondes.</p>
-    </div>
-
+  <!-- Galerie slider -->
+  <section class="gallerySection">
+    <div class="sectionLabel">Galerie</div>
+    <h2 class="sectionTitle">Notre travail en images</h2>
     <div class="slider" id="homeSlider">
       <div class="slide active" style="background-image:url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1600&q=80')">
-        <div><h3>Nettoyage professionnel</h3><p>Propreté, qualité et confiance.</p></div>
+        <div class="slideCaption"><h3>Nettoyage professionnel</h3><p>Propreté, qualité et confiance.</p></div>
       </div>
       <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=80')">
-        <div><h3>Bureaux</h3><p>Des espaces de travail propres et modernes.</p></div>
+        <div class="slideCaption"><h3>Bureaux</h3><p>Espaces de travail propres et modernes.</p></div>
       </div>
       <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1600&q=80')">
-        <div><h3>Commerces</h3><p>Un local accueillant pour vos clients.</p></div>
+        <div class="slideCaption"><h3>Commerces</h3><p>Un local accueillant pour vos clients.</p></div>
       </div>
       <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1600&q=80')">
-        <div><h3>Airbnb</h3><p>Préparation rapide entre les réservations.</p></div>
+        <div class="slideCaption"><h3>Airbnb</h3><p>Préparation rapide entre les réservations.</p></div>
       </div>
       <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1600&q=80')">
-        <div><h3>Après construction</h3><p>Remise en état après travaux.</p></div>
+        <div class="slideCaption"><h3>Après construction</h3><p>Remise en état après travaux.</p></div>
       </div>
     </div>
+    <div class="sliderDots" id="sliderDots"></div>
   </section>
 
-  <section class="why">
-    <div>
-      <span class="eyebrow dark">Pourquoi nous choisir</span>
-      <h2>Une image propre, sérieuse et professionnelle.</h2>
-      <p>Un site clair, moderne et rassurant. Le formulaire est facile à remplir sur téléphone et il envoie la demande par EmailJS + Firebase.</p>
-    </div>
-    <div class="whyList">
-      <div>✅ Qualité garantie</div>
-      <div>⏱️ Réponse rapide</div>
-      <div>🧼 Résultat impeccable</div>
-      <div>🤝 Équipe fiable</div>
-    </div>
-  </section>
-
+  <!-- Soumission -->
   <section id="soumission" class="quoteSection">
-    <div class="quoteHeader">
-      <span>Soumission gratuite</span>
-      <h2>Demandez votre estimation</h2>
-      <p>Remplissez le formulaire, nous vous contacterons rapidement.</p>
+    <div class="quoteLeft">
+      <div class="sectionLabel">Soumission gratuite</div>
+      <h2 class="sectionTitle">Demandez votre<br>estimation</h2>
+      <p>Remplissez le formulaire, nous vous contactons dans les 24 heures.</p>
+      <div class="quoteFeatures">
+        <div>✅ Gratuit et sans engagement</div>
+        <div>⚡ Réponse en moins de 24h</div>
+        <div>📞 514 473-5315</div>
+      </div>
     </div>
-
     <form id="quoteForm" class="quoteForm">
-      <label>Nom complet<input name="name" required placeholder="Votre nom"></label>
-      <label>Téléphone<input name="phone" required placeholder="514 000 0000"></label>
+      <div class="formRow">
+        <label>Nom complet<input name="name" required placeholder="Votre nom"></label>
+        <label>Téléphone<input name="phone" required placeholder="514 000-0000"></label>
+      </div>
       <label>Email<input name="email" type="email" placeholder="votre@email.com"></label>
       <label>Service
         <select name="service" required>
@@ -149,119 +243,131 @@
       </label>
       <label>Adresse<input name="address" required placeholder="Adresse du service"></label>
       <label>Date souhaitée<input name="date" type="date"></label>
-      <label class="full">Message<textarea name="message" rows="5" placeholder="Décrivez le travail à faire..."></textarea></label>
-      <button id="submitBtn" class="full" type="submit">Envoyer la demande</button>
-      <p id="formStatus" class="full"></p>
+      <label>Message<textarea name="message" rows="4" placeholder="Décrivez le travail à faire..."></textarea></label>
+      <button id="submitBtn" type="submit">Envoyer ma demande →</button>
+      <p id="formStatus"></p>
     </form>
   </section>
 
-  
-  <section class="contact contactPro">
-    <div class="contactCard">
-      <div class="contactLogo">
-        <img src="logo.jpeg" alt="Didier.Elo Multi Service Inc">
+  <!-- Contact -->
+  <section class="contactSection">
+    <div class="contactInner">
+      <div class="contactLeft">
+        <img src="logo.jpeg" alt="Didier.Elo">
+        <h2>Didier.Elo<br>Multi Service Inc</h2>
+        <p>Service de nettoyage professionnel à Laval, Montréal et environs.</p>
       </div>
-
-      <div class="contactContent">
-        <span>Contact rapide</span>
-        <h2>Didier.Elo Multi Service Inc</h2>
-        <p class="contactSub">Service de nettoyage et d’entretien professionnel à Laval, Montréal et environs.</p>
-
-        <div class="contactGrid">
-          <a href="tel:5144735315" class="contactItem">
-            <b>📞 Téléphone</b>
-            <strong><a href="tel:5144735315">514 473 5315</a></strong>
-            <small><a href="tel:4388367993">438 836 7993</a></small>
-          </a>
-
-          <a href="mailto:didierelo69@gmail.com" class="contactItem">
-            <b>✉️ Email</b>
-            <strong>didierelo69@gmail.com</strong>
-            <small>Réponse rapide</small>
-          </a>
-
-          <div class="contactItem">
-            <b>📍 Adresse</b>
-            <strong><a href="https://www.google.com/maps/search/?api=1&query=1344%20chemin%20du%20Bord-de-l%E2%80%99Eau%20Laval%20QC%20H7Y%201C1" target="_blank" rel="noopener">1344 chemin du Bord-de-l’Eau</a></strong>
-            <small>Laval, QC H7Y 1C1</small>
+      <div class="contactRight">
+        <a href="tel:5144735315" class="contactTile">
+          <div class="contactTileIcon">📞</div>
+          <div>
+            <strong>Téléphone principal</strong>
+            <span>514 473-5315</span>
           </div>
-        </div>
-
-        <div class="contactActions">
-          <a href="tel:5144735315" class="contactBtn main">Appeler maintenant</a>
-          <a href="#soumission" class="contactBtn light">Demander une soumission</a>
-        </div>
+        </a>
+        <a href="tel:4388367993" class="contactTile">
+          <div class="contactTileIcon">📱</div>
+          <div>
+            <strong>Téléphone secondaire</strong>
+            <span>438 836-7993</span>
+          </div>
+        </a>
+        <a href="mailto:didierelo69@gmail.com" class="contactTile">
+          <div class="contactTileIcon">✉️</div>
+          <div>
+            <strong>Email</strong>
+            <span>didierelo69@gmail.com</span>
+          </div>
+        </a>
+        <a href="https://www.google.com/maps/search/?api=1&query=1344+chemin+du+Bord-de-l'Eau+Laval+QC" target="_blank" class="contactTile">
+          <div class="contactTileIcon">📍</div>
+          <div>
+            <strong>Adresse</strong>
+            <span>1344 ch. du Bord-de-l'Eau, Laval</span>
+          </div>
+        </a>
       </div>
     </div>
   </section>
 
 </main>
 
+<!-- Bottom bar mobile -->
 <div class="bottomBar">
   <a href="tel:5144735315">📞 Appeler</a>
   <a href="#soumission">🧾 Soumission</a>
 </div>
 
-
-<section class="footerLuxury">
-
-  <div class="footerTop">
-
+<!-- Footer -->
+<footer class="footer">
+  <div class="footerInner">
     <div class="footerBrand">
       <img src="logo.jpeg" alt="Didier.Elo">
-
-      <h2>Didier.Elo Multi Service Inc</h2>
-
-      <p>
-        Service professionnel de nettoyage et d’entretien
-        pour bureaux, commerces, Airbnb et immeubles résidentiels.
-      </p>
-
-      <div class="footerButtons">
-        <a href="tel:5144735315" class="footerBtn blue">
-          📞 Appeler
-        </a>
-
-        <a href="index.html#soumission" class="footerBtn white">
-          🧾 Soumission
-        </a>
+      <h3>Didier.Elo Multi Service Inc</h3>
+      <p>Service professionnel de nettoyage pour bureaux, commerces, Airbnb et immeubles résidentiels à Laval et Montréal.</p>
+      <div class="footerBtns">
+        <a href="tel:5144735315" class="footerBtn blue">📞 Appeler</a>
+        <a href="#soumission" class="footerBtn outline">Soumission</a>
       </div>
     </div>
-
-    <div class="footerInfo">
-
-      <div class="footerBox">
-        <span>Téléphone</span>
-        <a href="tel:5144735315">514 473 5315</a>
-        <a href="tel:4388367993">438 836 7993</a>
+    <div class="footerLinks">
+      <div class="footerCol">
+        <h4>Services</h4>
+        <a href="bureaux.html">Bureaux</a>
+        <a href="commerces.html">Commerces</a>
+        <a href="residentiel.html">Résidentiel</a>
+        <a href="airbnb.html">Airbnb</a>
+        <a href="construction.html">Après construction</a>
+        <a href="grand-menage.html">Grand ménage</a>
       </div>
-
-      <div class="footerBox">
-        <span>Email</span>
-        <a href="mailto:didierelo69@gmail.com">
-          didierelo69@gmail.com
-        </a>
+      <div class="footerCol">
+        <h4>Contact</h4>
+        <a href="tel:5144735315">514 473-5315</a>
+        <a href="tel:4388367993">438 836-7993</a>
+        <a href="mailto:didierelo69@gmail.com">didierelo69@gmail.com</a>
+        <span>Laval, QC H7Y 1C1</span>
       </div>
-
-      <div class="footerBox">
-        <span>Adresse</span>
-        <p>
-          <a href="https://www.google.com/maps/search/?api=1&query=1344%20chemin%20du%20Bord-de-l%E2%80%99Eau%20Laval%20QC%20H7Y%201C1" target="_blank" rel="noopener">1344 chemin du Bord-de-l’Eau</a><br>
-          Laval, QC H7Y 1C1
-        </p>
-      </div>
-
     </div>
-
   </div>
-
   <div class="footerBottom">
-    © Didier.Elo Multi Service Inc — Propreté • Qualité • Confiance
+    © 2025 Didier.Elo Multi Service Inc — Propreté • Qualité • Confiance
   </div>
+</footer>
 
-</section>
+<script type="module" src="app.js?v=v3"></script>
+<script src="pwa.js?v=v3"></script>
+<script>
+// Slider avec dots
+const slides = document.querySelectorAll("#homeSlider .slide");
+const dotsContainer = document.getElementById("sliderDots");
+let current = 0;
 
-<script type="module" src="app.js?v=datafix-1"></script>
-<script src="pwa.js?v=datafix-1"></script>
+slides.forEach((_, i) => {
+  const dot = document.createElement("button");
+  dot.className = "sliderDot" + (i === 0 ? " active" : "");
+  dot.onclick = () => goTo(i);
+  dotsContainer.appendChild(dot);
+});
+
+function goTo(n) {
+  slides[current].classList.remove("active");
+  dotsContainer.children[current].classList.remove("active");
+  current = n;
+  slides[current].classList.add("active");
+  dotsContainer.children[current].classList.add("active");
+}
+
+setInterval(() => goTo((current + 1) % slides.length), 3500);
+
+// Header scroll
+window.addEventListener("scroll", () => {
+  document.getElementById("header").classList.toggle("scrolled", window.scrollY > 40);
+});
+
+// Menu
+document.getElementById("openMenu").onclick = () => document.getElementById("drawer").classList.add("open");
+document.getElementById("closeMenu").onclick = () => document.getElementById("drawer").classList.remove("open");
+document.querySelectorAll(".drawer a").forEach(a => a.onclick = () => document.getElementById("drawer").classList.remove("open"));
+</script>
 </body>
 </html>
