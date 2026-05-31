@@ -558,3 +558,198 @@
     font-size: .9rem;
   }
 }
+
+/* ===== TRUST BAR ===== */
+.trustBar {
+  background: #071f3d;
+  padding: 18px 5%;
+  overflow: hidden;
+}
+.trustBarInner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  flex-wrap: wrap;
+  max-width: 1300px;
+  margin: auto;
+}
+.trustItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,.8);
+  font-weight: 700;
+  font-size: .9rem;
+  padding: 6px 20px;
+}
+.trustItem span { color: rgba(255,255,255,.85); }
+.trustDivider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255,255,255,.15);
+}
+
+/* ===== PRIX ===== */
+.prixSection {
+  padding: 80px 5%;
+  background: linear-gradient(180deg, #f6fbff, #edf8ff);
+}
+.prixGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.prixCard {
+  background: white;
+  border-radius: 28px;
+  padding: 32px 28px;
+  box-shadow: 0 10px 40px rgba(6,50,100,.09);
+  border: 2px solid #e4f1ff;
+  text-align: center;
+  position: relative;
+  transition: transform .2s, box-shadow .2s;
+}
+.prixCard:hover { transform: translateY(-5px); box-shadow: 0 22px 55px rgba(6,50,100,.15); }
+.prixCard.featured {
+  border-color: #006bd6;
+  background: linear-gradient(180deg, #eef8ff, white);
+}
+.prixBadge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #006bd6, #00a8ff);
+  color: white;
+  font-weight: 900;
+  font-size: .82rem;
+  padding: 6px 18px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.prixIcon { font-size: 2.4rem; margin-bottom: 14px; }
+.prixCard h3 { font-size: 1.35rem; margin-bottom: 12px; color: #071f3d; }
+.prixMontant {
+  font-size: 1rem;
+  color: #60758d;
+  margin-bottom: 14px;
+}
+.prixMontant strong {
+  font-size: 2rem;
+  color: #006bd6;
+  display: block;
+  line-height: 1;
+  margin-top: 4px;
+}
+.prixCard p { color: #60758d; font-size: .9rem; line-height: 1.6; margin-bottom: 22px; }
+.prixBtn {
+  display: inline-block;
+  background: linear-gradient(135deg, #006bd6, #00a8ff);
+  color: white;
+  padding: 12px 22px;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: .9rem;
+  transition: transform .2s;
+}
+.prixBtn:hover { transform: translateY(-2px); }
+.prixNote {
+  text-align: center;
+  color: #8097b1;
+  font-size: .88rem;
+  margin-top: 24px;
+}
+
+/* ===== GOOGLE REVIEWS ===== */
+.googleReviewsBtn {
+  text-align: center;
+  margin-top: 36px;
+}
+
+/* ===== FAQ ===== */
+.faqSection {
+  padding: 80px 5%;
+  background: white;
+}
+.faqList {
+  max-width: 860px;
+  margin: 0 auto;
+  display: grid;
+  gap: 14px;
+}
+.faqItem {
+  background: #f6fbff;
+  border: 1px solid #d9ecff;
+  border-radius: 20px;
+  overflow: hidden;
+  transition: box-shadow .2s;
+}
+.faqItem[open] {
+  box-shadow: 0 8px 30px rgba(6,50,100,.1);
+  border-color: #006bd6;
+}
+.faqItem summary {
+  padding: 20px 24px;
+  font-weight: 800;
+  font-size: 1rem;
+  color: #071f3d;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.faqItem summary::-webkit-details-marker { display: none; }
+.faqItem summary::after {
+  content: "+";
+  font-size: 1.4rem;
+  color: #006bd6;
+  font-weight: 900;
+  flex-shrink: 0;
+  transition: transform .2s;
+}
+.faqItem[open] summary::after { transform: rotate(45deg); }
+.faqItem p {
+  padding: 0 24px 22px;
+  color: #40566e;
+  line-height: 1.7;
+  font-size: .95rem;
+}
+
+/* ===== WHATSAPP FLOTTANT ===== */
+.whatsappFloat {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  z-index: 95;
+  width: 58px;
+  height: 58px;
+  background: #25d366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 25px rgba(37,211,102,.45);
+  transition: transform .2s, box-shadow .2s;
+}
+.whatsappFloat:hover {
+  transform: scale(1.1);
+  box-shadow: 0 10px 35px rgba(37,211,102,.55);
+}
+.whatsappFloat svg { width: 32px; height: 32px; }
+
+@media(max-width: 850px) {
+  .trustBarInner { gap: 4px; }
+  .trustDivider { display: none; }
+  .trustItem { font-size: .82rem; padding: 5px 10px; }
+  .prixGrid { grid-template-columns: 1fr; max-width: 420px; }
+  .faqItem summary { font-size: .95rem; padding: 16px 18px; }
+  .faqItem p { padding: 0 18px 18px; }
+  .whatsappFloat { bottom: 75px; right: 14px; width: 52px; height: 52px; }
+  .whatsappFloat svg { width: 28px; height: 28px; }
+  .googleReviewsBtn { margin-top: 24px; }
+}
