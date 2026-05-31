@@ -240,3 +240,65 @@ body.adminBody{background:#eef6ff;color:#071f3d;padding-bottom:0}.adminTop{posit
     padding:9px 8px;
   }
 }
+
+/* ===== RÉSEAUX SOCIAUX ===== */
+.socialGrid {
+  display: grid;
+  gap: 14px;
+}
+.socialRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #f8fcff;
+  border: 1px solid #e0ecff;
+  border-radius: 18px;
+  padding: 16px 20px;
+}
+.socialIcon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  color: white;
+}
+.socialIcon.facebook { background: #1877f2; }
+.socialIcon.instagram { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+.socialIcon.tiktok { background: #010101; }
+.socialInfo {
+  flex: 1;
+  display: grid;
+  gap: 6px;
+}
+.socialInfo strong {
+  font-size: .9rem;
+  color: #40566e;
+}
+.socialInfo input {
+  border: 1.5px solid #d3e4f5;
+  background: white;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: .9rem;
+  width: 100%;
+}
+.socialInfo input:focus {
+  outline: none;
+  border-color: #006bd6;
+}
+.socialNote {
+  color: #8097b1;
+  font-size: .85rem;
+  margin-top: 14px;
+  text-align: center;
+}
+@media(max-width: 600px) {
+  .socialRow { flex-wrap: wrap; }
+  .socialInfo { width: 100%; }
+}

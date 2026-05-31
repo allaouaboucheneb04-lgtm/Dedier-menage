@@ -372,10 +372,40 @@
       </div>
     </div>
   </div>
+  <div class="footerSocial" id="footerSocial" style="display:none">
+    <div class="footerSocialInner">
+      <span>Suivez-nous</span>
+      <div id="socialLinks"></div>
+    </div>
+  </div>
   <div class="footerBottom">
     © Didier.Elo Multi Service Inc — Propreté • Qualité • Confiance
   </div>
 </section>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { firebaseConfig } from "./firebase-config.js";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+try {
+  const snap = await getDoc(doc(db, "settings", "social"));
+  if (snap.exists()) {
+    const data = snap.data();
+    const links = [];
+    if (data.facebook) links.push(`<a href="${data.facebook}" target="_blank" rel="noopener" class="socialLink facebook">f Facebook</a>`);
+    if (data.instagram) links.push(`<a href="${data.instagram}" target="_blank" rel="noopener" class="socialLink instagram">📸 Instagram</a>`);
+    if (data.tiktok) links.push(`<a href="${data.tiktok}" target="_blank" rel="noopener" class="socialLink tiktok">♪ TikTok</a>`);
+    if (links.length > 0) {
+      document.getElementById("socialLinks").innerHTML = links.join("");
+      document.getElementById("footerSocial").style.display = "block";
+    }
+  }
+} catch(e) { console.warn("Social links:", e); }
+</script>
 
 <script type="module" src="app.js?v=v4"></script>
 <script src="pwa.js?v=v4"></script>

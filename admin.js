@@ -113,6 +113,7 @@ async function loadAll() {
   await loadEmployees();
   await loadQuotes();
   await loadTasks();
+  await loadSocialLinks();
 }
 
 async function loadEmployees() {
@@ -444,3 +445,43 @@ function escapeHtml(value) {
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
   }[m]));
 }
+
+// ========== RÉSEAUX SOCIAUX ==========
+const SOCIAL_DOC = "settings/social";
+
+async function loadSocialLinks() {
+  try {
+    const snap = await getDoc(doc(db, "settings", "social"));
+    if (!snap.exists()) return;
+    const data = snap.data();
+    if (data.facebook) $("socialFacebook").value = data.facebook;
+    if (data.instagram) $("socialInstagram").value = data.instagram;
+    if (data.tiktok) $("socialTiktok").value = data.tiktok;
+  } catch(e) {
+    console.warn("loadSocialLinks", e);
+  }
+}
+
+async function saveSocialLink(platform, inputId) {
+  const value = $(inputId).value.trim();
+  const status = $("socialStatus");
+  try {
+    await setDoc(doc(db, "settings", "social"), { [platform]: value }, { merge: true });
+    status.textContent = `✅ ${platform} sauvegardé !`;
+    status.style.color = "#078b45";
+    setTimeout(() => status.textContent = "", 3000);
+  } catch(e) {
+    status.textContent = "❌ Erreur sauvegarde.";
+    status.style.color = "#d21f3c";
+  }
+}
+
+// Câbler les boutons après chargement
+document.addEventListener("DOMContentLoaded", () => {
+  const fb = $("saveFacebook");
+  const ig = $("saveInstagram");
+  const tt = $("saveTiktok");
+  if (fb) fb.onclick = () => saveSocialLink("facebook", "socialFacebook");
+  if (ig) ig.onclick = () => saveSocialLink("instagram", "socialInstagram");
+  if (tt) tt.onclick = () => saveSocialLink("tiktok", "socialTiktok");
+});
