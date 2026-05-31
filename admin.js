@@ -266,6 +266,7 @@ function renderQuotes() {
 
   list.innerHTML = filtered.map(quoteCard).join("");
 
+  // Bouton Assigner
   list.querySelectorAll("[data-assign]").forEach((btn) => {
     btn.onclick = async () => {
       const quoteId = btn.dataset.assign;
@@ -291,16 +292,13 @@ function renderQuotes() {
       // Email confirmation au client
       if (q.email) {
         try {
-          const emailData = {
-            to: q.email,
-            clientName: q.name || "Client",
-            service: q.service || "Service",
-            employeeName: emp.name || emp.email,
-            date: q.date || "à confirmer"
-          };
-          // EmailJS confirmation
           if (window.emailjs) {
-            await window.emailjs.send("service_yxizoav", "template_confirmation", emailData);
+            await window.emailjs.send("service_yxizoav", "template_confirmation", {
+              to: q.email, clientName: q.name || "Client",
+              service: q.service || "Service",
+              employeeName: emp.name || emp.email,
+              date: q.date || "à confirmer"
+            });
           }
         } catch(e) { console.warn("Email confirmation failed", e); }
       }
@@ -309,12 +307,51 @@ function renderQuotes() {
       await loadAll();
     };
   });
+
+  // Bouton Annuler
+  list.querySelectorAll("[data-annuler]").forEach((btn) => {
+    btn.onclick = async () => {
+      if (!confirm("Confirmer l'annulation de cette soumission ? Elle disparaîtra de la liste.")) return;
+      await updateDoc(doc(db, QUOTES_COLLECTION, btn.dataset.annuler), {
+        status: "annulé", annuledAt: serverTimestamp()
+      });
+      await loadQuotes();
+    };
+  });
+
+  // Sauvegarder montant admin
+  list.querySelectorAll("[data-save-montant]").forEach((btn) => {
+    btn.onclick = async () => {
+      const quoteId = btn.dataset.saveMontant;
+      const input = document.querySelector(`.montantInput[data-quote-id="${quoteId}"]`);
+      if (!input) return;
+      await updateDoc(doc(db, QUOTES_COLLECTION, quoteId), {
+        montantAdmin: input.value.trim()
+      });
+      btn.textContent = "✅"; setTimeout(() => btn.textContent = "💾 Montant", 2000);
+    };
+  });
+
+  // Sauvegarder note admin
+  list.querySelectorAll("[data-save-note]").forEach((btn) => {
+    btn.onclick = async () => {
+      const quoteId = btn.dataset.saveNote;
+      const input = document.querySelector(`.noteInput[data-quote-id="${quoteId}"]`);
+      if (!input) return;
+      await updateDoc(doc(db, QUOTES_COLLECTION, quoteId), {
+        noteAdmin: input.value.trim()
+      });
+      btn.textContent = "✅"; setTimeout(() => btn.textContent = "💾 Note", 2000);
+    };
+  });
+  });
 }
 
 function quoteCard(q) {
   const options = employees.map(e => `<option value="${e.id}">${escapeHtml(e.name || e.email)}</option>`).join("");
-  const statusClass = q.status === "assigné" ? "status assigned" : q.status === "terminé" ? "status done" : "status";
+  const statusClass = q.status === "assigné" ? "status assigned" : q.status === "terminé" ? "status done" : q.status === "annulé" ? "status cancelled" : "status";
   const dateStr = q.createdAt ? formatDate(q.createdAt) : "";
+  const montant = q.montantAdmin ? `<p class="montantAdmin">💰 Montant estimé : <strong>${escapeHtml(String(q.montantAdmin))}$</strong> <span>(visible admin seulement)</span></p>` : "";
 
   return `
     <article class="adminCard">
@@ -329,12 +366,32 @@ function quoteCard(q) {
       <p><b>Adresse:</b> ${mapLink(q.address)}</p>
       <p><b>Date souhaitée:</b> ${escapeHtml(q.date || "-")}</p>
       <p><b>Message:</b> ${escapeHtml(q.message || "-")}</p>
-      <div class="assignRow">
+      ${montant}
+
+      <!-- Montant admin -->
+      <div class="montantAdminRow">
+        <input type="number" class="montantInput" data-quote-id="${q.id}"
+          placeholder="Montant estimé ($)" value="${q.montantAdmin || ""}"
+          min="0" step="0.01">
+        <button class="smallBtn" data-save-montant="${q.id}">💾 Montant</button>
+      </div>
+
+      <!-- Note admin -->
+      <div class="noteAdminRow">
+        <input type="text" class="noteInput" data-quote-id="${q.id}"
+          placeholder="Note interne (visible admin seulement)..."
+          value="${escapeHtml(q.noteAdmin || "")}">
+        <button class="smallBtn" data-save-note="${q.id}">💾 Note</button>
+      </div>
+
+      <!-- Assigner -->
+      <div class="assignRow" style="margin-top:12px">
         <select data-employee-select="${q.id}">
           <option value="">Choisir employé</option>
           ${options}
         </select>
-        <button data-assign="${q.id}" class="smallBtn">Assigner</button>
+        <button data-assign="${q.id}" class="smallBtn">✅ Assigner</button>
+        <button data-annuler="${q.id}" class="smallBtn danger">🚫 Annuler</button>
       </div>
     </article>
   `;

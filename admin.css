@@ -360,3 +360,46 @@ body.adminBody{background:#eef6ff;color:#071f3d;padding-bottom:0}.adminTop{posit
     grid-template-columns: 1fr;
   }
 }
+
+/* ===== MONTANT & NOTE ADMIN ===== */
+.montantAdminRow, .noteAdminRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  align-items: center;
+}
+.montantInput, .noteInput {
+  flex: 1;
+  border: 2px solid #e0ecff;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: .88rem;
+  background: #f8fcff;
+  transition: border-color .2s;
+}
+.montantInput:focus, .noteInput:focus {
+  outline: none;
+  border-color: #006bd6;
+}
+.montantAdmin {
+  background: #fff9e6;
+  border: 1px solid #ffe080;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: .88rem;
+  color: #805500;
+}
+.montantAdmin strong { color: #c87000; font-size: 1.1rem; }
+.montantAdmin span { font-size: .78rem; opacity: .7; }
+
+/* Statut annulé */
+.status.cancelled {
+  background: #ffe0e0;
+  color: #d21f3c;
+}
+
+/* Bouton danger */
+.smallBtn.danger {
+  background: #d21f3c;
+}
