@@ -2,12 +2,11 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/fireba
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import {
   getFirestore, doc, getDoc, setDoc, collection, getDocs,
-  addDoc, updateDoc, serverTimestamp, query, orderBy, onSnapshot
+  addDoc, updateDoc, serverTimestamp, query, orderBy, onSnapshot, where
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import { firebaseConfig, ROLES_COLLECTION, QUOTES_COLLECTION, TASKS_COLLECTION } from "./firebase-config.js";
 
 const INVITES_COLLECTION = "invites";
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -15,6 +14,9 @@ const db = getFirestore(app);
 let employees = [];
 let currentUser = null;
 let firstAdminSnapshot = true;
+let allQuotes = [];
+let activeFilter = "tous";
+let searchQuery = "";
 
 const $ = (id) => document.getElementById(id);
 
@@ -37,20 +39,14 @@ function showDebug(message, error = false) {
 }
 
 onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    location.replace("login.html");
-    return;
-  }
+  if (!user) { location.replace("login.html"); return; }
 
   currentUser = user;
   setText("adminEmail", user.email || user.uid);
 
   const logoutBtn = $("logoutBtn");
   if (logoutBtn) {
-    logoutBtn.onclick = async () => {
-      await signOut(auth);
-      location.replace("login.html");
-    };
+    logoutBtn.onclick = async () => { await signOut(auth); location.replace("login.html"); };
   }
 
   const notifBtn = $("enableNotificationsBtn");
@@ -77,18 +73,36 @@ onAuthStateChanged(auth, async (user) => {
   const refreshTasks = $("refreshTasks");
   if (refreshTasks) refreshTasks.onclick = loadTasks;
 
+  // Filtres
+  document.querySelectorAll("[data-filter]").forEach(btn => {
+    btn.onclick = () => {
+      activeFilter = btn.dataset.filter;
+      document.querySelectorAll("[data-filter]").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderQuotes();
+    };
+  });
+
+  // Recherche
+  const searchInput = $("searchQuotes");
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      searchQuery = searchInput.value.toLowerCase().trim();
+      renderQuotes();
+    });
+  }
+
   try {
     const roleSnap = await getDoc(doc(db, ROLES_COLLECTION, user.uid));
-
     if (!roleSnap.exists() || roleSnap.data().role !== "admin") {
-      alert("Accès admin refusé. Vérifie Firestore > users > " + user.uid + " avec role: admin");
+      alert("Accès admin refusé.");
       await signOut(auth);
       location.replace("login.html");
       return;
     }
-
     await loadAll();
     setupRealtimeQuotes();
+    loadStats();
   } catch (error) {
     console.error(error);
     showDebug("Erreur chargement admin. Vérifie les rules Firestore.", true);
@@ -105,14 +119,10 @@ async function loadEmployees() {
   try {
     const snap = await getDocs(collection(db, ROLES_COLLECTION));
     employees = [];
-
     snap.forEach((d) => {
       const data = d.data();
-      if (data.role === "employe") {
-        employees.push({ id: d.id, ...data });
-      }
+      if (data.role === "employe") employees.push({ id: d.id, ...data });
     });
-
     setText("countEmployees", employees.length);
   } catch (error) {
     console.error("loadEmployees", error);
@@ -120,11 +130,48 @@ async function loadEmployees() {
   }
 }
 
+// ========== STATS ==========
+async function loadStats() {
+  try {
+    const snap = await getDocs(collection(db, QUOTES_COLLECTION));
+    const docs = [];
+    snap.forEach(d => docs.push(d.data()));
+
+    const now = new Date();
+    const thisWeek = docs.filter(d => {
+      if (!d.createdAt) return false;
+      const date = d.createdAt.toDate ? d.createdAt.toDate() : new Date(d.createdAt);
+      const diff = (now - date) / (1000 * 60 * 60 * 24);
+      return diff <= 7;
+    });
+    const thisMonth = docs.filter(d => {
+      if (!d.createdAt) return false;
+      const date = d.createdAt.toDate ? d.createdAt.toDate() : new Date(d.createdAt);
+      return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+    });
+
+    setText("statWeek", thisWeek.length);
+    setText("statMonth", thisMonth.length);
+    setText("statTotal", docs.length);
+
+    // Top service
+    const services = {};
+    docs.forEach(d => {
+      const s = d.service || "Autre";
+      services[s] = (services[s] || 0) + 1;
+    });
+    const topService = Object.entries(services).sort((a, b) => b[1] - a[1])[0];
+    setText("statTopService", topService ? topService[0] : "-");
+  } catch (e) {
+    console.warn("Stats error", e);
+  }
+}
+
+// ========== INVITE ==========
 const inviteForm = $("inviteForm");
 if (inviteForm) {
   inviteForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-
     const data = Object.fromEntries(new FormData(e.target).entries());
     const code = crypto.randomUUID().slice(0, 8).toUpperCase();
     const cleanEmail = data.email.trim().toLowerCase();
@@ -132,32 +179,22 @@ if (inviteForm) {
 
     try {
       await setDoc(doc(db, INVITES_COLLECTION, code), {
-        code,
-        name: data.name.trim(),
-        email: cleanEmail,
-        role: "employe",
-        status: "pending",
-        createdAt: serverTimestamp(),
-        createdBy: currentUser.uid,
-        inviteLink: link
+        code, name: data.name.trim(), email: cleanEmail, role: "employe",
+        status: "pending", createdAt: serverTimestamp(), createdBy: currentUser.uid, inviteLink: link
       });
-
       const status = $("inviteStatus");
-      if (status) {
-        status.textContent = "✅ Invitation créée. Copie le lien et envoie-le à l’employé.";
-        status.style.color = "#078b45";
-      }
-
+      if (status) { status.textContent = "✅ Invitation créée."; status.style.color = "#078b45"; }
       if ($("inviteResult")) $("inviteResult").hidden = false;
       if ($("inviteLink")) $("inviteLink").value = link;
+
+      // Email invite link
+      const emailBtn = $("emailInvite");
+      if (emailBtn) emailBtn.href = `mailto:${cleanEmail}?subject=Invitation%20Didier.Elo&body=Voici%20ton%20lien%20d%27invitation%20:%20${encodeURIComponent(link)}`;
+
       e.target.reset();
     } catch (error) {
-      console.error(error);
       const status = $("inviteStatus");
-      if (status) {
-        status.textContent = "❌ Erreur création invitation.";
-        status.style.color = "#d21f3c";
-      }
+      if (status) { status.textContent = "❌ Erreur création invitation."; status.style.color = "#d21f3c"; }
     }
   });
 }
@@ -171,98 +208,125 @@ if (copyInvite) {
   };
 }
 
+// ========== QUOTES ==========
 async function loadQuotes() {
   const list = $("quotesList");
   if (!list) return;
-
-  list.innerHTML = "<p>Chargement des soumissions...</p>";
+  list.innerHTML = "<p>Chargement...</p>";
 
   try {
     let snap;
     try {
       snap = await getDocs(query(collection(db, QUOTES_COLLECTION), orderBy("createdAt", "desc")));
     } catch (e) {
-      console.warn("Fallback no orderBy", e);
       snap = await getDocs(collection(db, QUOTES_COLLECTION));
     }
 
-    const docs = [];
-    snap.forEach((d) => docs.push({ id: d.id, ...d.data() }));
-
-    setText("countQuotes", docs.length);
-
-    if (!docs.length) {
-      list.innerHTML = "<p>Aucune soumission pour le moment.</p>";
-      showDebug("Admin connecté. Aucune soumission trouvée.");
-      return;
-    }
-
-    showDebug("Admin connecté. Soumissions chargées: " + docs.length);
-    list.innerHTML = docs.map(quoteCard).join("");
-
-    list.querySelectorAll("[data-assign]").forEach((btn) => {
-      btn.onclick = async () => {
-        const quoteId = btn.dataset.assign;
-        const select = document.querySelector(`[data-employee-select="${quoteId}"]`);
-        const emp = employees.find(e => e.id === select.value);
-
-        if (!emp) {
-          alert("Choisis un employé.");
-          return;
-        }
-
-        const q = docs.find(x => x.id === quoteId);
-
-        await addDoc(collection(db, TASKS_COLLECTION), {
-          quoteId,
-          clientName: q.name || "",
-          phone: q.phone || "",
-          email: q.email || "",
-          service: q.service || "",
-          address: q.address || "",
-          date: q.date || "",
-          message: q.message || "",
-          employeeId: emp.id,
-          employeeName: emp.name || emp.email || "Employé",
-          employeeEmail: emp.email || "",
-          status: "assigné",
-          notes: "",
-          createdAt: serverTimestamp(),
-          assignedBy: currentUser.uid
-        });
-
-        await updateDoc(doc(db, QUOTES_COLLECTION, quoteId), {
-          status: "assigné",
-          assignedTo: emp.id,
-          assignedToName: emp.name || emp.email || "Employé"
-        });
-
-        alert("Travail assigné ✅");
-        await loadAll();
-      };
-    });
+    allQuotes = [];
+    snap.forEach((d) => allQuotes.push({ id: d.id, ...d.data() }));
+    setText("countQuotes", allQuotes.length);
+    showDebug("Admin connecté. Soumissions: " + allQuotes.length);
+    renderQuotes();
   } catch (error) {
     console.error("loadQuotes", error);
     setText("countQuotes", "!");
-    list.innerHTML = `<p style="color:#d21f3c;font-weight:900;">Erreur chargement soumissions. Vérifie les rules Firestore.</p>`;
-    showDebug("Erreur Firestore: demandes_soumission bloqué.", true);
+    list.innerHTML = `<p style="color:#d21f3c;font-weight:900;">Erreur chargement soumissions.</p>`;
   }
+}
+
+function renderQuotes() {
+  const list = $("quotesList");
+  if (!list) return;
+
+  let filtered = allQuotes;
+
+  // Filtre par statut
+  if (activeFilter !== "tous") {
+    filtered = filtered.filter(q => (q.status || "nouveau") === activeFilter);
+  }
+
+  // Recherche
+  if (searchQuery) {
+    filtered = filtered.filter(q =>
+      (q.name || "").toLowerCase().includes(searchQuery) ||
+      (q.service || "").toLowerCase().includes(searchQuery) ||
+      (q.phone || "").toLowerCase().includes(searchQuery) ||
+      (q.email || "").toLowerCase().includes(searchQuery)
+    );
+  }
+
+  // Compteur filtre
+  setText("filterCount", filtered.length + " résultat" + (filtered.length !== 1 ? "s" : ""));
+
+  if (!filtered.length) {
+    list.innerHTML = "<p>Aucune soumission pour ce filtre.</p>";
+    return;
+  }
+
+  list.innerHTML = filtered.map(quoteCard).join("");
+
+  list.querySelectorAll("[data-assign]").forEach((btn) => {
+    btn.onclick = async () => {
+      const quoteId = btn.dataset.assign;
+      const select = document.querySelector(`[data-employee-select="${quoteId}"]`);
+      const emp = employees.find(e => e.id === select.value);
+      if (!emp) { alert("Choisis un employé."); return; }
+
+      const q = allQuotes.find(x => x.id === quoteId);
+
+      await addDoc(collection(db, TASKS_COLLECTION), {
+        quoteId, clientName: q.name || "", phone: q.phone || "", email: q.email || "",
+        service: q.service || "", address: q.address || "", date: q.date || "",
+        message: q.message || "", employeeId: emp.id,
+        employeeName: emp.name || emp.email || "Employé",
+        employeeEmail: emp.email || "", status: "assigné", notes: "",
+        createdAt: serverTimestamp(), assignedBy: currentUser.uid
+      });
+
+      await updateDoc(doc(db, QUOTES_COLLECTION, quoteId), {
+        status: "assigné", assignedTo: emp.id, assignedToName: emp.name || emp.email || "Employé"
+      });
+
+      // Email confirmation au client
+      if (q.email) {
+        try {
+          const emailData = {
+            to: q.email,
+            clientName: q.name || "Client",
+            service: q.service || "Service",
+            employeeName: emp.name || emp.email,
+            date: q.date || "à confirmer"
+          };
+          // EmailJS confirmation
+          if (window.emailjs) {
+            await window.emailjs.send("service_yxizoav", "template_confirmation", emailData);
+          }
+        } catch(e) { console.warn("Email confirmation failed", e); }
+      }
+
+      alert("Travail assigné ✅");
+      await loadAll();
+    };
+  });
 }
 
 function quoteCard(q) {
   const options = employees.map(e => `<option value="${e.id}">${escapeHtml(e.name || e.email)}</option>`).join("");
+  const statusClass = q.status === "assigné" ? "status assigned" : q.status === "terminé" ? "status done" : "status";
+  const dateStr = q.createdAt ? formatDate(q.createdAt) : "";
 
   return `
     <article class="adminCard">
       <div class="cardTop">
         <h3>${escapeHtml(q.name || "Sans nom")}</h3>
-        <span class="status">${escapeHtml(q.status || "nouveau")}</span>
+        <span class="${statusClass}">${escapeHtml(q.status || "nouveau")}</span>
       </div>
+      ${dateStr ? `<p class="cardDate">📅 ${dateStr}</p>` : ""}
       <p><b>Service:</b> ${escapeHtml(q.service || "-")}</p>
       <p><b>Téléphone:</b> ${phoneLink(q.phone)}</p>
-      <p><b>Email:</b> ${escapeHtml(q.email || "-")}</p>
+      <p><b>Email:</b> ${emailLink(q.email)}</p>
       <p><b>Adresse:</b> ${mapLink(q.address)}</p>
-      <p><b>Date:</b> ${escapeHtml(q.date || "-")}</p>
+      <p><b>Date souhaitée:</b> ${escapeHtml(q.date || "-")}</p>
       <p><b>Message:</b> ${escapeHtml(q.message || "-")}</p>
       <div class="assignRow">
         <select data-employee-select="${q.id}">
@@ -275,11 +339,11 @@ function quoteCard(q) {
   `;
 }
 
+// ========== TASKS ==========
 async function loadTasks() {
   const list = $("tasksList");
   if (!list) return;
-
-  list.innerHTML = "<p>Chargement des travaux...</p>";
+  list.innerHTML = "<p>Chargement...</p>";
 
   try {
     let snap;
@@ -296,11 +360,7 @@ async function loadTasks() {
     });
 
     setText("countTasks", docs.length);
-
-    if (!docs.length) {
-      list.innerHTML = "<p>Aucun travail actif.</p>";
-      return;
-    }
+    if (!docs.length) { list.innerHTML = "<p>Aucun travail actif.</p>"; return; }
 
     list.innerHTML = docs.map(taskCard).join("");
 
@@ -308,7 +368,6 @@ async function loadTasks() {
       btn.onclick = async () => {
         const updateData = { status: btn.dataset.status, updatedAt: serverTimestamp() };
         if (btn.dataset.status === "terminé") updateData.completedAt = serverTimestamp();
-
         await updateDoc(doc(db, TASKS_COLLECTION, btn.dataset.task), updateData);
         await loadTasks();
       };
@@ -331,29 +390,23 @@ function taskCard(t) {
       <p><b>Service:</b> ${escapeHtml(t.service || "-")}</p>
       <p><b>Adresse:</b> ${mapLink(t.address)}</p>
       <p><b>Téléphone:</b> ${phoneLink(t.phone)}</p>
-      <div class="assignRow">
-        <button class="smallBtn" data-task="${t.id}" data-status="assigné">Assigné</button>
-        <button class="smallBtn" data-task="${t.id}" data-status="en cours">En cours</button>
-        <button class="smallBtn ok" data-task="${t.id}" data-status="terminé">Terminé</button>
+      <div class="assignRow threeBtn">
+        <button class="smallBtn grey" data-task="${t.id}" data-status="assigné">Assigné</button>
+        <button class="smallBtn orange" data-task="${t.id}" data-status="en cours">En cours</button>
+        <button class="smallBtn ok" data-task="${t.id}" data-status="terminé">✅ Terminé</button>
       </div>
     </article>
   `;
 }
 
+// ========== REALTIME ==========
 function setupRealtimeQuotes() {
   try {
     const q = query(collection(db, QUOTES_COLLECTION), orderBy("createdAt", "desc"));
     onSnapshot(q, (snap) => {
-      if (firstAdminSnapshot) {
-        firstAdminSnapshot = false;
-        return;
-      }
-
+      if (firstAdminSnapshot) { firstAdminSnapshot = false; return; }
       snap.docChanges().forEach((change) => {
-        if (change.type === "added") {
-          // La notification push est envoyée par la Firebase Function (notifyNewQuote).
-          loadQuotes();
-        }
+        if (change.type === "added") loadQuotes();
       });
     }, (error) => console.warn("Realtime désactivé:", error));
   } catch (error) {
@@ -361,19 +414,29 @@ function setupRealtimeQuotes() {
   }
 }
 
-// Les notifications de nouvelles soumissions sont gérées par la Firebase Function
-// notifyNewQuote qui envoie via l'API OneSignal côté serveur — fiable sur iPhone.
+// ========== HELPERS ==========
+function formatDate(ts) {
+  try {
+    const date = ts.toDate ? ts.toDate() : new Date(ts);
+    return date.toLocaleDateString("fr-CA", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  } catch { return ""; }
+}
 
 function phoneLink(phone) {
   if (!phone) return "-";
   const clean = String(phone).replace(/[^\d+]/g, "");
-  return `<a href="tel:${clean}">${escapeHtml(phone)}</a>`;
+  return `<a href="tel:${clean}" class="callBtn">📞 ${escapeHtml(phone)}</a>`;
+}
+
+function emailLink(email) {
+  if (!email) return "-";
+  return `<a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a>`;
 }
 
 function mapLink(address) {
   if (!address) return "-";
   const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-  return `<a href="${url}" target="_blank" rel="noopener">${escapeHtml(address)}</a>`;
+  return `<a href="${url}" target="_blank" rel="noopener">📍 ${escapeHtml(address)}</a>`;
 }
 
 function escapeHtml(value) {
@@ -381,5 +444,3 @@ function escapeHtml(value) {
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
   }[m]));
 }
-
-// Note: le bouton enableNotificationsBtn est câblé dans onAuthStateChanged ci-dessus.

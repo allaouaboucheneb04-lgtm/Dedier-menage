@@ -240,3 +240,186 @@ body.adminBody{background:#eef6ff;color:#071f3d;padding-bottom:0}.adminTop{posit
     padding:9px 8px;
   }
 }
+
+/* ===== NOUVELLES AMÉLIORATIONS ===== */
+
+/* Stats détaillées */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.statCard {
+  background: white;
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(7,50,95,.07);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.statIcon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.statCard strong {
+  display: block;
+  font-size: 1.8rem;
+  color: #006bd6;
+  line-height: 1;
+}
+
+.statCard span {
+  color: #60758d;
+  font-weight: 800;
+  font-size: .88rem;
+}
+
+/* Recherche */
+.searchBar {
+  margin-bottom: 14px;
+}
+
+.searchBar input {
+  width: 100%;
+  border: 2px solid #d3e4f5;
+  background: #f8fcff;
+  border-radius: 16px;
+  padding: 14px 18px;
+  font: inherit;
+  font-size: 1rem;
+  transition: border-color .2s;
+  box-sizing: border-box;
+}
+
+.searchBar input:focus {
+  outline: none;
+  border-color: #006bd6;
+}
+
+/* Filtres */
+.filterBar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.filterBtn {
+  border: 2px solid #d3e4f5;
+  background: white;
+  color: #40566e;
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-weight: 900;
+  cursor: pointer;
+  font-size: .9rem;
+  transition: all .2s;
+}
+
+.filterBtn:hover {
+  border-color: #006bd6;
+  color: #006bd6;
+}
+
+.filterBtn.active {
+  background: #006bd6;
+  border-color: #006bd6;
+  color: white;
+}
+
+.filterCount {
+  color: #60758d;
+  font-weight: 800;
+  font-size: .9rem;
+  margin-left: auto;
+}
+
+/* Bouton appel rapide */
+.callBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #e8f9ee;
+  color: #078b45 !important;
+  border-radius: 10px;
+  padding: 6px 12px;
+  font-weight: 900;
+  text-decoration: none !important;
+  transition: background .2s;
+}
+
+.callBtn:hover {
+  background: #c8f0d8;
+}
+
+/* Date de soumission */
+.cardDate {
+  color: #60758d;
+  font-size: .86rem;
+  margin-bottom: 6px !important;
+}
+
+/* Statut assigné */
+.status.assigned {
+  background: #fff4e0;
+  color: #c87000;
+}
+
+/* Boutons travaux */
+.assignRow.threeBtn {
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.smallBtn.grey {
+  background: #8097b1;
+}
+
+.smallBtn.orange {
+  background: #e07c00;
+}
+
+@media(max-width: 850px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .assignRow.threeBtn {
+    grid-template-columns: 1fr;
+  }
+
+  .filterBar {
+    gap: 8px;
+  }
+
+  .filterBtn {
+    padding: 8px 14px;
+    font-size: .84rem;
+  }
+}
+
+@media(max-width: 480px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .statCard {
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .statIcon {
+    font-size: 1.5rem;
+  }
+
+  .statCard strong {
+    font-size: 1.4rem;
+  }
+}
